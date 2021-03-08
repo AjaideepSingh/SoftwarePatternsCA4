@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "136005248905",
+    "project_id": "electronicstore-ac550",
+    "storage_bucket": "electronicstore-ac550.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:136005248905:android:b637cfc2b279c81a9da358",
+        "android_client_info": {
+          "package_name": "com.example.softwarepatternsca4"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "136005248905-ih0v2g7bgubtm9q8gvlpaveel3ggh33p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsaCBmopKJ887kwmJnHNlR2k8T86v3yCI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "136005248905-ih0v2g7bgubtm9q8gvlpaveel3ggh33p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
