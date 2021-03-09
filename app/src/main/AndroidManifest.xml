@@ -10,6 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SoftwarePatternsCA4">
 
+        <activity android:name=".Settings" />
         <activity android:name="Authentication.LogIn">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,5 +20,8 @@
         </activity>
         <activity android:name=".Home" />
         <activity android:name="Authentication.SignUp" />
+        <activity
+            android:name=".StockManager"
+            android:theme="@style/Theme.test" />
     </application>
 </manifest>

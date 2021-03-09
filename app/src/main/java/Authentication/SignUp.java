@@ -131,7 +131,7 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
                     User user = new User(userName.getText().toString().trim(),address.getText().toString().trim(),emailAddress.getText().toString().trim(),cardNo.getText().toString(),cvv.getText().toString(),expiryDate.getText().toString(),accountType.getSelectedItem().toString());
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                     databaseReference.child("User").child(Objects.requireNonNull(mAuth.getUid())).setValue(user).addOnCompleteListener(task1 -> {
-                                if (task.isSuccessful()) {
+                                if (task1.isSuccessful()) {
                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                         NotificationChannel notificationChannel = new NotificationChannel("My Notification", "test", NotificationManager.IMPORTANCE_DEFAULT);
                                         NotificationManager notificationManager = getSystemService(NotificationManager.class);
