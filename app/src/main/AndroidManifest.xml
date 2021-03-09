@@ -17,6 +17,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-<!--       new class declarations go here!-->
+        <activity android:name=".Home" />
+        <activity android:name="Authentication.SignUp" />
     </application>
 </manifest>
