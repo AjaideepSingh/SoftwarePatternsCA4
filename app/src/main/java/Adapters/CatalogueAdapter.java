@@ -1,9 +1,15 @@
 package Adapters;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,9 +21,11 @@ import Model.Item;
 
 public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.ViewHolder> implements View.OnClickListener {
     private final ArrayList<Item> items;
+    private final Context context;
 
-    public CatalogueAdapter(ArrayList<Item> items) {
+    public CatalogueAdapter(ArrayList<Item> items, Context context) {
         this.items = items;
+        this.context = context;
     }
 
     @NonNull
@@ -27,6 +35,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
         return new ViewHolder(view);
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public void onBindViewHolder(@NonNull CatalogueAdapter.ViewHolder holder, final int position) {
         holder.setTitle(items.get(position).getTitle());
@@ -34,6 +43,30 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
         holder.setPrice(String.valueOf(items.get(position).getPrice()));
         holder.setImage(items.get(position).getImage());
         holder.setManufacturer(items.get(position).getManufacturer());
+        holder.options.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(context, holder.options);
+            popup.inflate(R.menu.customeroptions);
+            popup.setOnMenuItemClickListener(item -> {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                switch (item.getItemId()) {
+                    case R.id.addToCard:
+                        Button add;
+                        EditText quantity;
+                        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                        View view = inflater.inflate(R.layout.addtocartpopup, null);
+                        add = view.findViewById(R.id.addToBasket);
+                        quantity = view.findViewById(R.id.quantity);
+
+                        //Add to cart functionality
+                        //check stock allow user to select quantity
+                        builder.setNegativeButton("Close", (dialog, which) -> dialog.cancel());
+                        builder.setView(view);
+                        break;
+                }
+                return false;
+            });
+            popup.show();
+        });
     }
 
     @Override
@@ -47,7 +80,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final ImageView itemImage;
-        private final TextView title, price, category, manufacturer,options;
+        private final TextView title, price, category, manufacturer, options;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -60,7 +93,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
         }
 
         public void setImage(String i) {
-            Picasso.get().load(i).into(itemImage);
+//            Picasso.get().load(i).into(itemImage);
         }
 
         public void setTitle(String t) {

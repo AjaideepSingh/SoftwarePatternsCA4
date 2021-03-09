@@ -1,11 +1,11 @@
 package Model;
 
 public class Item {
-    private String title,manufacturer,category,image;
+    private String title,manufacturer,category,image,id;
     private double price;
     private int stockAmount;
 
-    private Item() {
+    public Item() {
 
     }
 
@@ -57,7 +57,15 @@ public class Item {
         this.stockAmount = stockAmount;
     }
 
-    public Item(String title, String manufacturer, String category, String image, double price,int stockAmount) {
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Item(String title, String manufacturer, String category, String image, double price, int stockAmount) {
         this.title = title;
         this.manufacturer = manufacturer;
         this.category = category;

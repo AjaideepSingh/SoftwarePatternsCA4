@@ -24,6 +24,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Objects;
 import Adapters.CatalogueAdapter;
+import Authentication.LogIn;
 import Model.Item;
 import Model.User;
 
@@ -71,6 +72,10 @@ public class Home extends AppCompatActivity {
                         }
                     });
                     break;
+                case R.id.logOut:
+                    finish();
+                    startActivity(new Intent(Home.this, LogIn.class));
+                    break;
             }
             drawerLayout.closeDrawer(Gravity.START);
             return true;
@@ -114,7 +119,7 @@ public class Home extends AppCompatActivity {
                 }
                 recyclerView.setHasFixedSize(true);
                 recyclerView.setLayoutManager(new LinearLayoutManager(Home.this));
-                catalogueAdapter = new CatalogueAdapter(items);
+                catalogueAdapter = new CatalogueAdapter(items,Home.this);
                 recyclerView.setAdapter(catalogueAdapter);
             }
 
