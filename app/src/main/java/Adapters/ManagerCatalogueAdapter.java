@@ -49,6 +49,7 @@ public class ManagerCatalogueAdapter extends RecyclerView.Adapter<ManagerCatalog
         holder.setPrice(String.valueOf(items.get(position).getPrice()));
         holder.setImage(items.get(position).getImage());
         holder.setManufacturer(items.get(position).getManufacturer());
+        holder.setStock(String.valueOf(items.get(position).getStockAmount()));
         holder.options.setOnClickListener(v -> {
             PopupMenu popup = new PopupMenu(context, holder.options);
             popup.inflate(R.menu.manageroptions);
@@ -120,7 +121,7 @@ public class ManagerCatalogueAdapter extends RecyclerView.Adapter<ManagerCatalog
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final ImageView itemImage;
-        private final TextView title, price, category, manufacturer, options;
+        private final TextView title, price, category, manufacturer, options,stock;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -130,6 +131,7 @@ public class ManagerCatalogueAdapter extends RecyclerView.Adapter<ManagerCatalog
             category = itemView.findViewById(R.id.itemCategory);
             manufacturer = itemView.findViewById(R.id.itemManufacturer);
             options = itemView.findViewById(R.id.itemOptions);
+            stock = itemView.findViewById(R.id.rcvRowStock);
         }
 
         public void setImage(String i) {
@@ -141,7 +143,7 @@ public class ManagerCatalogueAdapter extends RecyclerView.Adapter<ManagerCatalog
         }
 
         public void setPrice(String p) {
-            price.setText(p);
+            price.setText(p + " Euros");
         }
 
         public void setCategory(String c) {
@@ -150,6 +152,10 @@ public class ManagerCatalogueAdapter extends RecyclerView.Adapter<ManagerCatalog
 
         public void setManufacturer(String m) {
             manufacturer.setText(m);
+        }
+
+        public void setStock(String s) {
+            stock.setText(s + " Left");
         }
     }
 }

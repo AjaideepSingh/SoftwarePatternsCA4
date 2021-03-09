@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -19,14 +21,20 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.UUID;
+
 import Adapters.ManagerCatalogueAdapter;
 import Model.Item;
 
@@ -49,9 +57,10 @@ public class StockManager extends AppCompatActivity {
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Item");
             databaseReference.addValueEventListener(new ValueEventListener() {
                 final ArrayList<String> itemTitles = new ArrayList<>();
+
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    for(DataSnapshot itemSnapshot : snapshot.getChildren()) {
+                    for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
                         Item item = itemSnapshot.getValue(Item.class);
                         assert item != null;
                         itemTitles.add(item.getTitle());
@@ -118,12 +127,6 @@ public class StockManager extends AppCompatActivity {
             if (TextUtils.isEmpty(title.getText().toString())) {
                 title.setError("Field cannot be empty!");
                 title.requestFocus();
-            } else if (TextUtils.isEmpty(stock.getText().toString())) {
-                stock.setError("Field cannot be empty!");
-                stock.requestFocus();
-            } else if (TextUtils.isEmpty(price.getText().toString())) {
-                price.setError("Field cannot be empty!");
-                price.requestFocus();
             } else if (TextUtils.isEmpty(manufacturer.getText().toString())) {
                 manufacturer.setError("Field cannot be empty!");
                 manufacturer.requestFocus();
@@ -134,7 +137,13 @@ public class StockManager extends AppCompatActivity {
                 dlgAlert.setPositiveButton("OK", null);
                 dlgAlert.setCancelable(true);
                 dlgAlert.create().show();
-            } else if(itemTitles.contains(title.getText().toString())) {
+            } else if (TextUtils.isEmpty(price.getText().toString())) {
+                price.setError("Field cannot be empty!");
+                price.requestFocus();
+            } else if (TextUtils.isEmpty(stock.getText().toString())) {
+                stock.setError("Field cannot be empty!");
+                stock.requestFocus();
+            } else if (itemTitles.contains(title.getText().toString())) {
                 title.setError("Error this item already exists");
                 title.requestFocus();
             } else {

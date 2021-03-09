@@ -43,6 +43,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
         holder.setPrice(String.valueOf(items.get(position).getPrice()));
         holder.setImage(items.get(position).getImage());
         holder.setManufacturer(items.get(position).getManufacturer());
+        holder.setStock(String.valueOf(items.get(position).getStockAmount()));
         holder.options.setOnClickListener(v -> {
             PopupMenu popup = new PopupMenu(context, holder.options);
             popup.inflate(R.menu.customeroptions);
@@ -80,7 +81,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final ImageView itemImage;
-        private final TextView title, price, category, manufacturer, options;
+        private final TextView title, price, category, manufacturer, options,stock;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -90,6 +91,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
             category = itemView.findViewById(R.id.itemCategory);
             manufacturer = itemView.findViewById(R.id.itemManufacturer);
             options = itemView.findViewById(R.id.itemOptions);
+            stock = itemView.findViewById(R.id.rcvRowStock);
         }
 
         public void setImage(String i) {
@@ -97,19 +99,23 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
         }
 
         public void setTitle(String t) {
-            title.setText(t);
+            title.setText("Title: " + t);
         }
 
         public void setPrice(String p) {
-            price.setText(p);
+            price.setText(p + " Euros");
         }
 
         public void setCategory(String c) {
-            category.setText(c);
+            category.setText("Category: " + c);
         }
 
         public void setManufacturer(String m) {
-            manufacturer.setText(m);
+            manufacturer.setText("Manufacturer: " + m);
+        }
+
+        public void setStock(String s) {
+            stock.setText(s + " Left");
         }
     }
 }

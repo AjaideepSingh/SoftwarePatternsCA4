@@ -30,10 +30,10 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="11dp"
-            android:layout_marginTop="4dp"
             android:layout_marginEnd="58dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             app:layout_constraintEnd_toStartOf="@+id/itemOptions"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/itemPicture"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -42,10 +42,11 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="11dp"
-            android:layout_marginTop="13dp"
+            android:layout_marginTop="5dp"
             android:layout_marginEnd="79dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/itemPicture"
             app:layout_constraintTop_toBottomOf="@+id/itemManufacturer" />
 
@@ -54,10 +55,11 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="11dp"
-            android:layout_marginTop="11dp"
-            android:layout_marginEnd="79dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="129dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/itemPicture"
             app:layout_constraintTop_toBottomOf="@+id/itemCategory" />
 
@@ -66,10 +68,11 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="11dp"
-            android:layout_marginTop="11dp"
-            android:layout_marginEnd="79dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="108dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/itemOptions"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/itemPicture"
             app:layout_constraintTop_toBottomOf="@+id/itemTitle" />
 
@@ -85,5 +88,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             tools:layout_editor_absoluteY="4dp" />
 
+        <TextView
+            android:id="@+id/rcvRowStock"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="11dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="159dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/itemPicture"
+            app:layout_constraintTop_toBottomOf="@+id/itemPrice" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
