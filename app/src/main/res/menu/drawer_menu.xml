@@ -9,6 +9,9 @@
             android:icon="@drawable/settings"
             android:title="Settings"/>
         <item
+            android:id="@+id/reviewsScreen"
+            android:title="Product reviews" />
+        <item
             android:id="@+id/stockManager"
             android:title="Stock Manager"/>
         <item

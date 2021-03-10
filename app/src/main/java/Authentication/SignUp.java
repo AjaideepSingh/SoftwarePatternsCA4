@@ -88,8 +88,8 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
 
         ArrayList<String> studentAccount = new ArrayList<>();
         studentAccount.add("Are you a student?");
-        studentAccount.add("Yes");
-        studentAccount.add("No");
+        studentAccount.add("Student Account");
+        studentAccount.add("Non Student Account");
         ArrayAdapter<String> adapterStudent = new ArrayAdapter<String>(SignUp.this, android.R.layout.simple_spinner_dropdown_item, studentAccount) {
             @Override
             public boolean isEnabled(int position) {

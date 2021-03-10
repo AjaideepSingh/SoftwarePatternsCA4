@@ -86,6 +86,9 @@ public class Home extends AppCompatActivity {
                     finish();
                     startActivity(new Intent(Home.this, LogIn.class));
                     break;
+                case R.id.reviewsScreen:
+                    startActivity(new Intent(Home.this, Reviews.class));
+                    break;
             }
             drawerLayout.closeDrawer(Gravity.START);
             return true;

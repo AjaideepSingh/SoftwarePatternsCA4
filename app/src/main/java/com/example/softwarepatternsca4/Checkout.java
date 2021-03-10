@@ -86,7 +86,7 @@ public class Checkout extends AppCompatActivity {
                                         totalPrice += cart.getItem().getPrice();
                                     }
                                 }
-                                if(user.getStudent().equalsIgnoreCase("yes")) {
+                                if(user.getStudent().equalsIgnoreCase("Student Account")) {
                                     totalPrice = totalPrice - (100 * 10 / 100);
                                     studentDiscount();
                                 }
