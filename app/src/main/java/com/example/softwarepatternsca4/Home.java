@@ -72,7 +72,30 @@ public class Home extends AppCompatActivity {
                             if(user.getAccType().equalsIgnoreCase("admin")) {
                                 startActivity(new Intent(Home.this,StockManager.class));
                             } else {
-                                Toast.makeText(getApplicationContext(),"Admin accounts only!",Toast.LENGTH_SHORT).show();
+                                adminsOnly();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(getApplicationContext(),"Error occurred: " + error.getMessage(),Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    break;
+                case R.id.reviewsScreen:
+                    startActivity(new Intent(Home.this, Reviews.class));
+                    break;
+                case R.id.orderHistory:
+                    DatabaseReference orderRef = FirebaseDatabase.getInstance().getReference("User").child(Objects.requireNonNull(mAuth.getUid()));
+                    orderRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            User user = snapshot.getValue(User.class);
+                            assert user != null;
+                            if(user.getAccType().equalsIgnoreCase("admin")) {
+                                startActivity(new Intent(Home.this,Orders.class));
+                            } else {
+                                adminsOnly();
                             }
                         }
 
@@ -85,9 +108,6 @@ public class Home extends AppCompatActivity {
                 case R.id.logOut:
                     finish();
                     startActivity(new Intent(Home.this, LogIn.class));
-                    break;
-                case R.id.reviewsScreen:
-                    startActivity(new Intent(Home.this, Reviews.class));
                     break;
             }
             drawerLayout.closeDrawer(Gravity.START);
@@ -168,6 +188,11 @@ public class Home extends AppCompatActivity {
 
     public void showInfoSnackBar() {
         Snackbar snackbar = Snackbar.make(constraintLayout, "Sorry no products for sale!", Snackbar.LENGTH_LONG);
+        snackbar.show();
+    }
+
+    public void adminsOnly() {
+        Snackbar snackbar = Snackbar.make(constraintLayout, "Admins access only", Snackbar.LENGTH_LONG);
         snackbar.show();
     }
 }

@@ -10,10 +10,18 @@
             android:title="Settings"/>
         <item
             android:id="@+id/reviewsScreen"
+            android:icon="@drawable/review"
             android:title="Product reviews" />
         <item
             android:id="@+id/stockManager"
+            android:icon="@drawable/manager"
             android:title="Stock Manager"/>
+
+        <item
+            android:id="@+id/orderHistory"
+            android:icon="@drawable/history"
+            android:title="User order history" />
+
         <item
             android:id="@+id/logOut"
             android:icon="@drawable/exit"
