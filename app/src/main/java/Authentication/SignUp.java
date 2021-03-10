@@ -33,7 +33,7 @@ import Model.User;
 public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private EditText emailAddress, userName, password,address,cardNo,cvv,expiryDate;
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private Spinner accountType;
+    private Spinner accountType,discount;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +49,7 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
         TextView signInInstead = findViewById(R.id.existing_account);
         Button registerButton = findViewById(R.id.button4);
         accountType = findViewById(R.id.spinner2);
+        discount = findViewById(R.id.spinner);
         populateSpinner();
         signInInstead.setOnClickListener(v -> {
             startActivity(new Intent(getApplicationContext(), LogIn.class));
@@ -84,12 +85,38 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
         adapterGender.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         accountType.setAdapter(adapterGender);
         accountType.setOnItemSelectedListener(SignUp.this);
+
+        ArrayList<String> studentAccount = new ArrayList<>();
+        studentAccount.add("Are you a student?");
+        studentAccount.add("Yes");
+        studentAccount.add("No");
+        ArrayAdapter<String> adapterStudent = new ArrayAdapter<String>(SignUp.this, android.R.layout.simple_spinner_dropdown_item, studentAccount) {
+            @Override
+            public boolean isEnabled(int position) {
+                return position != 0;
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, @NotNull ViewGroup parent) {
+                View view = super.getDropDownView(position, convertView, parent);
+                TextView textview = (TextView) view;
+                if (position == 0) {
+                    textview.setTextColor(Color.GRAY);
+                } else {
+                    textview.setTextColor(Color.BLACK);
+                }
+                return view;
+            }
+        };
+        adapterStudent.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        discount.setAdapter(adapterStudent);
+        discount.setOnItemSelectedListener(SignUp.this);
     }
 
     public void createUser() {
-        if(accountType.getSelectedItemPosition() == 0) {
+        if(accountType.getSelectedItemPosition() == 0 || discount.getSelectedItemPosition() == 0) {
             AlertDialog.Builder dlgAlert = new AlertDialog.Builder(SignUp.this);
-            dlgAlert.setMessage("Spinner value not selected!");
+            dlgAlert.setMessage("Spinner values must be selected!");
             dlgAlert.setTitle("Error...");
             dlgAlert.setPositiveButton("OK", null);
             dlgAlert.setCancelable(true);
@@ -123,7 +150,7 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
         }  else {
             mAuth.createUserWithEmailAndPassword(emailAddress.getText().toString().trim(), password.getText().toString()).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    User user = new User(userName.getText().toString().trim(),address.getText().toString().trim(),emailAddress.getText().toString().trim(),cardNo.getText().toString(),cvv.getText().toString(),expiryDate.getText().toString(),accountType.getSelectedItem().toString());
+                    User user = new User(userName.getText().toString().trim(),address.getText().toString().trim(),emailAddress.getText().toString().trim(),cardNo.getText().toString(),cvv.getText().toString(),expiryDate.getText().toString(),accountType.getSelectedItem().toString(),discount.getSelectedItem().toString());
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                     databaseReference.child("User").child(Objects.requireNonNull(mAuth.getUid())).setValue(user).addOnCompleteListener(task1 -> {
                                 if (task1.isSuccessful()) {

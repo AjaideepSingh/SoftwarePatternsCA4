@@ -42,7 +42,6 @@ public class LogIn extends AppCompatActivity {
             } else {
                 mAuth.signInWithEmailAndPassword(emailAddress.getText().toString().trim(), password.getText().toString()).addOnCompleteListener(task -> {
                     if(task.isSuccessful()) {
-                        Toast.makeText(LogIn.this, "User verified", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(getApplicationContext(), Home.class));
                         emailAddress.setText("");
                         password.setText("");

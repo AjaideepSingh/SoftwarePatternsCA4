@@ -3,4 +3,7 @@
     <item
         android:id="@+id/addToCard"
         android:title="Add to cart" />
+    <item
+        android:id="@+id/leaveReview"
+        android:title="Add review" />
 </menu>

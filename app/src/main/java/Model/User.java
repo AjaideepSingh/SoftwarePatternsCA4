@@ -1,7 +1,7 @@
 package Model;
 
 public class User {
-    private String name,shippingAddress,emailAddress,cardNumber,cvv,expiryDate,accType;
+    private String name,shippingAddress,emailAddress,cardNumber,cvv,expiryDate,accType,student;
 
     public User() {
 
@@ -63,7 +63,15 @@ public class User {
         this.accType = accType;
     }
 
-    public User(String name, String shippingAddress, String emailAddress, String cardNumber, String cvv, String expiryDate,String accType) {
+    public String getStudent() {
+        return student;
+    }
+
+    public void setStudent(String student) {
+        this.student = student;
+    }
+
+    public User(String name, String shippingAddress, String emailAddress, String cardNumber, String cvv, String expiryDate, String accType,String student) {
         this.name = name;
         this.shippingAddress = shippingAddress;
         this.emailAddress = emailAddress;
@@ -71,5 +79,6 @@ public class User {
         this.cvv = cvv;
         this.expiryDate = expiryDate;
         this.accType = accType;
+        this.student = student;
     }
 }

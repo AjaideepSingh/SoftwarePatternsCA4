@@ -116,10 +116,10 @@ public class ManagerCatalogueAdapter extends RecyclerView.Adapter<ManagerCatalog
                                             if (item.getTitle().equalsIgnoreCase(items.get(position).getTitle())) {
                                                 items.clear();
                                                 notifyDataSetChanged();
+                                                dialog.dismiss();
                                                 databaseReference.child(item.getId()).child("stockAmount").setValue(Integer.parseInt(stockAmount.getText().toString())).addOnCompleteListener(task -> {
                                                     if (task.isSuccessful()) {
                                                         Toast.makeText(context, "Item stock updated", Toast.LENGTH_SHORT).show();
-
                                                     } else {
                                                         Toast.makeText(context, "Error occurred: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                                                     }

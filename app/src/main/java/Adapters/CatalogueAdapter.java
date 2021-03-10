@@ -5,13 +5,17 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -24,17 +28,22 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.annotations.NotNull;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.Objects;
+
+import Authentication.SignUp;
 import Model.Cart;
 import Model.Item;
+import Model.Review;
 
-public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.ViewHolder> implements View.OnClickListener {
+public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.ViewHolder> implements View.OnClickListener, AdapterView.OnItemSelectedListener {
     private final ArrayList<Item> items;
     private final Context context;
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private String ratingMeasure;
 
     public CatalogueAdapter(ArrayList<Item> items, Context context) {
         this.items = items;
@@ -63,6 +72,80 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
             popup.setOnMenuItemClickListener(item -> {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 switch (item.getItemId()) {
+                    case R.id.leaveReview:
+                        LayoutInflater reviewInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                        View reviewView = reviewInflater.inflate(R.layout.reviewpopup, null);
+                        Spinner rating = reviewView.findViewById(R.id.ratingSpinner);
+                        EditText review = reviewView.findViewById(R.id.reviewMessage);
+                        ArrayList<String> reviews = new ArrayList<>();
+                        reviews.add("Leave rating!");
+                        reviews.add("1");
+                        reviews.add("2");
+                        reviews.add("3");
+                        reviews.add("4");
+                        reviews.add("5");
+                        ArrayAdapter<String> adapterStudent = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, reviews) {
+                            @Override
+                            public boolean isEnabled(int position) {
+                                return position != 0;
+                            }
+
+                            @Override
+                            public View getDropDownView(int position, View convertView, @NotNull ViewGroup parent) {
+                                View view = super.getDropDownView(position, convertView, parent);
+                                TextView textview = (TextView) view;
+                                if (position == 0) {
+                                    textview.setTextColor(Color.GRAY);
+                                } else {
+                                    textview.setTextColor(Color.BLACK);
+                                }
+                                return view;
+                            }
+                        };
+                        adapterStudent.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        rating.setAdapter(adapterStudent);
+                        rating.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                            @Override
+                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                ratingMeasure = parent.getItemAtPosition(position).toString();
+                            }
+
+                            @Override
+                            public void onNothingSelected(AdapterView<?> parent) {
+
+                            }
+                        });
+                        builder.setPositiveButton("add", (rDialog, which) -> {
+                        });
+                        builder.setNegativeButton("Close", (rDialog, which) -> rDialog.cancel());
+                        builder.setView(reviewView);
+                        AlertDialog rDialog = builder.create();
+                        rDialog.show();
+                        rDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v1 -> {
+                            if (TextUtils.isEmpty(review.getText().toString())) {
+                                review.setError("Error field cannot be empty");
+                                review.requestFocus();
+                            } else if (rating.getSelectedItemPosition() == 0) {
+                                AlertDialog.Builder dlgAlert = new AlertDialog.Builder(context);
+                                dlgAlert.setMessage("Rating must be selected!");
+                                dlgAlert.setTitle("Error...");
+                                dlgAlert.setPositiveButton("OK", null);
+                                dlgAlert.setCancelable(true);
+                                dlgAlert.create().show();
+                            } else {
+                                rDialog.dismiss();
+                                Review reviewObj = new Review(review.getText().toString().trim(), mAuth.getUid(), items.get(position).getTitle(), ratingMeasure);
+                                DatabaseReference reviewReference = FirebaseDatabase.getInstance().getReference("Review");
+                                reviewReference.push().setValue(reviewObj).addOnCompleteListener(task1 -> {
+                                    if(task1.isSuccessful()) {
+                                        Toast.makeText(context, "Review created", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(context, "Error occurred: " + Objects.requireNonNull(task1.getException()).getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        });
+                        break;
                     case R.id.addToCard:
                         EditText quantity;
                         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -99,7 +182,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                                                 Cart cart = new Cart(itemToAdd, mAuth.getUid());
                                                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Cart");
                                                 databaseReference.push().setValue(cart).addOnCompleteListener(task1 -> {
-                                                    if(task1.isSuccessful()) {
+                                                    if (task1.isSuccessful()) {
                                                         Toast.makeText(context, "Item added to cart", Toast.LENGTH_SHORT).show();
                                                         DatabaseReference updateItemDBReference = FirebaseDatabase.getInstance().getReference("Item");
                                                         updateItemDBReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -139,13 +222,13 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                             });
 
                         });
-                    break;
+                        break;
                 }
                 return false;
             });
             popup.show();
-    });
-}
+        });
+    }
 
     @Override
     public int getItemCount() {
@@ -156,9 +239,19 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
     public void onClick(View v) {
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final ImageView itemImage;
-        private final TextView title, price, category, manufacturer, options,stock;
+        private final TextView title, price, category, manufacturer, options, stock;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

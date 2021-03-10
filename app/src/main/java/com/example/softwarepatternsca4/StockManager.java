@@ -16,6 +16,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
@@ -227,6 +228,7 @@ public class StockManager extends AppCompatActivity {
                     }).addOnFailureListener(e -> {
                 pd.dismiss();
                 Toast.makeText(getApplicationContext(), "Error Occurred!" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.i("Error","" + e.getMessage());
             }).addOnProgressListener(snapshot -> {
                 double progressPercent = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
                 pd.setMessage("Percentage " + (int) progressPercent + " " + "%");
