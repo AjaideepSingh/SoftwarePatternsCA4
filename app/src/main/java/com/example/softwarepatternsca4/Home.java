@@ -40,10 +40,11 @@ public class Home extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        Toolbar toolbar = findViewById(R.id.homeToolBar);
+        setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setTitle("Online catalogue");
         recyclerView = findViewById(R.id.catalogueRCV);
         drawerLayout = findViewById(R.id.a);
-        Toolbar toolbar = findViewById(R.id.toolbar);
         NavigationView navigationView = findViewById(R.id.nav_view);
         getUserDetailsToPopulateHeader();
         navigationView.setItemIconTintList(null);

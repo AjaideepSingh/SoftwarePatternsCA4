@@ -59,91 +59,69 @@ public class ManagerCatalogueAdapter extends RecyclerView.Adapter<ManagerCatalog
             popup.setOnMenuItemClickListener(item -> {
                 switch (item.getItemId()) {
                     case R.id.removeItem:
+                        Item itemToRemove = null;
+                        for (int i = 0; i < items.size(); i++) {
+                            if (i == position) {
+                                itemToRemove = items.get(position);
+                                break;
+                            }
+                        }
                         AlertDialog.Builder builder = new AlertDialog.Builder(context);
                         builder.setMessage("Are you sure you want to delete this item from your favourites");
-                                builder.setNegativeButton("No", (dialog, which) -> dialog.cancel());
-                                builder.setPositiveButton("Yes", (dialog, which) -> {
-                                    Item itemToDelete = new Item();
-                                    for(int i = 0; i < items.size(); i++) {
-                                        if(items.get(i).getTitle().equalsIgnoreCase(items.get(position).getTitle())) {
-                                            itemToDelete = items.get(i);
-                                            break;
-                                        }
-                                    }
-                                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Item");
-                                    Item finalItemToDelete = itemToDelete;
-                                    databaseReference.addValueEventListener(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            for(DataSnapshot itemSnapshot : snapshot.getChildren()) {
-                                                Item item = itemSnapshot.getValue(Item.class);
-                                                assert item != null;
-                                                item.setId(itemSnapshot.getKey());
-                                                if(item.getTitle().equalsIgnoreCase(finalItemToDelete.getTitle())) {
-                                                    databaseReference.child(item.getId()).removeValue().addOnCompleteListener(task -> {
-                                                        if(task.isSuccessful()) {
-                                                            Toast.makeText(context,"Item removed",Toast.LENGTH_SHORT).show();
-                                                        } else {
-                                                            Toast.makeText(context,"Error occurred: " + Objects.requireNonNull(task.getException()).getMessage(),Toast.LENGTH_SHORT).show();
-                                                        }
-                                                    });
-                                                    break;
-                                                }
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-                                            Toast.makeText(context,"Error occurred: " + error.getMessage(),Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                                    items.clear();
-                                    notifyDataSetChanged();
-                                });
+                        builder.setNegativeButton("No", (dialog, which) -> dialog.cancel());
+                        Item finalItemToRemove = itemToRemove;
+                        builder.setPositiveButton("Yes", (dialog, which) -> {
+                            DatabaseReference deleteReference = FirebaseDatabase.getInstance().getReference("Item").child(finalItemToRemove.getId());
+                            deleteReference.removeValue().addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(context, "Item removed", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(context, "Error occurred: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                                items.clear();
+                                notifyDataSetChanged();
+                            });
+                        });
                         AlertDialog alertDialog = builder.create();
                         alertDialog.setTitle("Attention required!");
                         alertDialog.show();
                         break;
                     case R.id.updateStock:
-                        Item itemToUpdate = new Item();
-                        for(int i = 0; i < items.size(); i++) {
-                            if(items.get(i).equals(items.get(position))) {
-                                itemToUpdate = items.get(i);
-                                break;
-                            }
-                        }
                         AlertDialog.Builder updateBuilder = new AlertDialog.Builder(context);
                         @SuppressLint("InflateParams")
                         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                         View view = inflater.inflate(R.layout.stockupdater, null);
                         EditText stockAmount;
                         stockAmount = view.findViewById(R.id.updateStockEditText);
-                        stockAmount.setText(String.valueOf(itemToUpdate.getStockAmount()));
-                        updateBuilder.setPositiveButton("Update", (dialog, which) -> { });
+                        stockAmount.setText(String.valueOf(items.get(position).getStockAmount()));
+                        updateBuilder.setPositiveButton("Update", (dialog, which) -> {
+                        });
                         updateBuilder.setNegativeButton("Close", (dialog, which) -> dialog.cancel());
                         updateBuilder.setView(view);
                         AlertDialog dialog = updateBuilder.create();
                         dialog.show();
-                        Item finalItemToUpdate = itemToUpdate;
                         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v1 -> {
-                            if(TextUtils.isEmpty(stockAmount.getText().toString())) {
+                            if (TextUtils.isEmpty(stockAmount.getText().toString())) {
                                 stockAmount.setError("Field cannot be empty!");
                                 stockAmount.requestFocus();
                             } else {
                                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Item");
-                                databaseReference.addValueEventListener(new ValueEventListener() {
+                                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        for(DataSnapshot itemSnapshot : snapshot.getChildren()) {
+                                        for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
                                             Item item = itemSnapshot.getValue(Item.class);
                                             assert item != null;
                                             item.setId(itemSnapshot.getKey());
-                                            if(item.getTitle().equalsIgnoreCase(finalItemToUpdate.getTitle())) {
+                                            if (item.getTitle().equalsIgnoreCase(items.get(position).getTitle())) {
+                                                items.clear();
+                                                notifyDataSetChanged();
                                                 databaseReference.child(item.getId()).child("stockAmount").setValue(Integer.parseInt(stockAmount.getText().toString())).addOnCompleteListener(task -> {
-                                                    if(task.isSuccessful()) {
-                                                        Toast.makeText(context,"Item stock updated",Toast.LENGTH_SHORT).show();
+                                                    if (task.isSuccessful()) {
+                                                        Toast.makeText(context, "Item stock updated", Toast.LENGTH_SHORT).show();
+
                                                     } else {
-                                                        Toast.makeText(context,"Error occurred: " + Objects.requireNonNull(task.getException()).getMessage(),Toast.LENGTH_SHORT).show();
+                                                        Toast.makeText(context, "Error occurred: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                                                     }
                                                 });
                                             }
@@ -152,7 +130,7 @@ public class ManagerCatalogueAdapter extends RecyclerView.Adapter<ManagerCatalog
 
                                     @Override
                                     public void onCancelled(@NonNull DatabaseError error) {
-                                        Toast.makeText(context,"Error occurred: " + error.getMessage(),Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(context, "Error occurred: " + error.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 });
                             }
@@ -176,7 +154,7 @@ public class ManagerCatalogueAdapter extends RecyclerView.Adapter<ManagerCatalog
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final ImageView itemImage;
-        private final TextView title, price, category, manufacturer, options,stock;
+        private final TextView title, price, category, manufacturer, options, stock;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

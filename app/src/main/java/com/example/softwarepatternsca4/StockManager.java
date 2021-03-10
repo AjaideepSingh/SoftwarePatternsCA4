@@ -158,8 +158,8 @@ public class StockManager extends AppCompatActivity {
             } else {
                 dialog.dismiss();
                 Item item = new Item(title.getText().toString(),manufacturer.getText().toString(),category.getSelectedItem().toString(),imageDownloadUrl,Double.parseDouble(price.getText().toString()),Integer.parseInt(stock.getText().toString()));
-                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-                databaseReference.child("Item").push().setValue(item).addOnCompleteListener(task -> {
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Item");
+                databaseReference.push().setValue(item).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Toast.makeText(StockManager.this, "Item added to catalogue!", Toast.LENGTH_SHORT).show();
                         items.clear();
@@ -179,6 +179,8 @@ public class StockManager extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
                     Item item = itemSnapshot.getValue(Item.class);
+                    assert item != null;
+                    item.setId(itemSnapshot.getKey());
                     items.add(item);
                 }
                 recyclerView.setHasFixedSize(true);
