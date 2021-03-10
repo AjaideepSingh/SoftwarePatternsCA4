@@ -3,9 +3,13 @@ package Adapters;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -13,14 +17,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.softwarepatternsca4.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.Objects;
 import Model.Item;
@@ -102,6 +105,58 @@ public class ManagerCatalogueAdapter extends RecyclerView.Adapter<ManagerCatalog
                         alertDialog.show();
                         break;
                     case R.id.updateStock:
+                        Item itemToUpdate = new Item();
+                        for(int i = 0; i < items.size(); i++) {
+                            if(items.get(i).equals(items.get(position))) {
+                                itemToUpdate = items.get(i);
+                                break;
+                            }
+                        }
+                        AlertDialog.Builder updateBuilder = new AlertDialog.Builder(context);
+                        @SuppressLint("InflateParams")
+                        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                        View view = inflater.inflate(R.layout.stockupdater, null);
+                        EditText stockAmount;
+                        stockAmount = view.findViewById(R.id.updateStockEditText);
+                        stockAmount.setText(String.valueOf(itemToUpdate.getStockAmount()));
+                        updateBuilder.setPositiveButton("Update", (dialog, which) -> { });
+                        updateBuilder.setNegativeButton("Close", (dialog, which) -> dialog.cancel());
+                        updateBuilder.setView(view);
+                        AlertDialog dialog = updateBuilder.create();
+                        dialog.show();
+                        Item finalItemToUpdate = itemToUpdate;
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v1 -> {
+                            if(TextUtils.isEmpty(stockAmount.getText().toString())) {
+                                stockAmount.setError("Field cannot be empty!");
+                                stockAmount.requestFocus();
+                            } else {
+                                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Item");
+                                databaseReference.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        for(DataSnapshot itemSnapshot : snapshot.getChildren()) {
+                                            Item item = itemSnapshot.getValue(Item.class);
+                                            assert item != null;
+                                            item.setId(itemSnapshot.getKey());
+                                            if(item.getTitle().equalsIgnoreCase(finalItemToUpdate.getTitle())) {
+                                                databaseReference.child(item.getId()).child("stockAmount").setValue(Integer.parseInt(stockAmount.getText().toString())).addOnCompleteListener(task -> {
+                                                    if(task.isSuccessful()) {
+                                                        Toast.makeText(context,"Item stock updated",Toast.LENGTH_SHORT).show();
+                                                    } else {
+                                                        Toast.makeText(context,"Error occurred: " + Objects.requireNonNull(task.getException()).getMessage(),Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        Toast.makeText(context,"Error occurred: " + error.getMessage(),Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        });
                         break;
                 }
                 return false;
@@ -135,7 +190,11 @@ public class ManagerCatalogueAdapter extends RecyclerView.Adapter<ManagerCatalog
         }
 
         public void setImage(String i) {
-//            Picasso.get().load(i).into(itemImage);
+            StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+            storageReference.child(i).getBytes(Long.MAX_VALUE).addOnSuccessListener(bytes -> {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                itemImage.setImageBitmap(bitmap);
+            });
         }
 
         public void setTitle(String t) {

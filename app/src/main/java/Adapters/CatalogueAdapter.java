@@ -3,6 +3,8 @@ package Adapters;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +16,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.softwarepatternsca4.R;
-import com.squareup.picasso.Picasso;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import Model.Item;
-
 
 public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.ViewHolder> implements View.OnClickListener {
     private final ArrayList<Item> items;
@@ -57,9 +59,6 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                         View view = inflater.inflate(R.layout.addtocartpopup, null);
                         add = view.findViewById(R.id.addToBasket);
                         quantity = view.findViewById(R.id.quantity);
-
-                        //Add to cart functionality
-                        //check stock allow user to select quantity
                         builder.setNegativeButton("Close", (dialog, which) -> dialog.cancel());
                         builder.setView(view);
                         break;
@@ -95,7 +94,11 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
         }
 
         public void setImage(String i) {
-//            Picasso.get().load(i).into(itemImage);
+            StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+            storageReference.child(i).getBytes(Long.MAX_VALUE).addOnSuccessListener(bytes -> {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                itemImage.setImageBitmap(bitmap);
+            });
         }
 
         public void setTitle(String t) {

@@ -1,19 +1,24 @@
 package com.example.softwarepatternsca4;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.app.ProgressDialog;
+import android.content.ContentResolver;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,20 +26,17 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.NotNull;
-
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.UUID;
-
 import Adapters.ManagerCatalogueAdapter;
 import Model.Item;
 
@@ -42,7 +44,10 @@ public class StockManager extends AppCompatActivity {
     private RecyclerView recyclerView;
     private final ArrayList<Item> items = new ArrayList<>();
     private ManagerCatalogueAdapter managerCatalogueAdapter;
-
+    private final StorageReference storageReference= FirebaseStorage.getInstance().getReference("uploads");
+    private Uri mImageUri;
+    private String imageDownloadUrl;
+    private ImageView itemPicture;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,14 +88,13 @@ public class StockManager extends AppCompatActivity {
         EditText title, stock, manufacturer, price;
         Spinner category;
         Button pictureAttach;
-        ImageView itemPicture;
         title = view.findViewById(R.id.stockTitle);
         stock = view.findViewById(R.id.stockAmount);
         manufacturer = view.findViewById(R.id.stockManufacturer);
         price = view.findViewById(R.id.price);
         category = view.findViewById(R.id.categorySpinner);
         pictureAttach = view.findViewById(R.id.stockPictureButton);
-        itemPicture = view.findViewById(R.id.itemPicture);
+        itemPicture = view.findViewById(R.id.stockImage);
         final ArrayList<String> categories = new ArrayList<>();
         categories.add("Select category!");
         categories.add("Electronics");
@@ -117,7 +121,12 @@ public class StockManager extends AppCompatActivity {
         };
         category.setAdapter(categoryAdapter);
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        pictureAttach.setOnClickListener(v -> { });
+        pictureAttach.setOnClickListener(v -> {
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1000);
+        });
         builder.setPositiveButton("Create", (dialog, which) -> { });
         builder.setNegativeButton("Close", (dialog, which) -> dialog.cancel());
         builder.setView(view);
@@ -148,7 +157,7 @@ public class StockManager extends AppCompatActivity {
                 title.requestFocus();
             } else {
                 dialog.dismiss();
-                Item item = new Item(title.getText().toString(),manufacturer.getText().toString(),category.getSelectedItem().toString(),"",Double.parseDouble(price.getText().toString()),Integer.parseInt(stock.getText().toString()));
+                Item item = new Item(title.getText().toString(),manufacturer.getText().toString(),category.getSelectedItem().toString(),imageDownloadUrl,Double.parseDouble(price.getText().toString()),Integer.parseInt(stock.getText().toString()));
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                 databaseReference.child("Item").push().setValue(item).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -183,5 +192,45 @@ public class StockManager extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Error Occurred: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1000 && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
+            mImageUri = data.getData();
+            Picasso.get().load(mImageUri).into(itemPicture);
+            uploadImageToFirebase();
+        }
+    }
+
+    private String getFileExtension(Uri uri) {
+        ContentResolver contentResolver = getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(contentResolver.getType(uri));
+    }
+
+    private void uploadImageToFirebase() {
+        if (mImageUri != null) {
+            final ProgressDialog pd = new ProgressDialog(this);
+            pd.setTitle("Uploading Image....");
+            pd.show();
+            final StorageReference fileReference = storageReference.child(System.currentTimeMillis()
+                    + "." + getFileExtension(mImageUri));
+            fileReference.putFile(mImageUri)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        pd.dismiss();
+                        Toast.makeText(getApplicationContext(), "Upload Successful", Toast.LENGTH_SHORT).show();
+                        imageDownloadUrl = fileReference.getPath();
+                    }).addOnFailureListener(e -> {
+                pd.dismiss();
+                Toast.makeText(getApplicationContext(), "Error Occurred!" + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }).addOnProgressListener(snapshot -> {
+                double progressPercent = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+                pd.setMessage("Percentage " + (int) progressPercent + " " + "%");
+            });
+        } else {
+            Toast.makeText(StockManager.this, "No file selected", Toast.LENGTH_SHORT).show();
+        }
     }
 }
