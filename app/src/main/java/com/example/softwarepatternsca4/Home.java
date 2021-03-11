@@ -105,6 +105,25 @@ public class Home extends AppCompatActivity {
                         }
                     });
                     break;
+                case R.id.userDetails:
+                    DatabaseReference detailsRef = FirebaseDatabase.getInstance().getReference("User").child(Objects.requireNonNull(mAuth.getUid()));
+                    detailsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            User user = snapshot.getValue(User.class);
+                            assert user != null;
+                            if(user.getAccType().equalsIgnoreCase("admin")) {
+                                startActivity(new Intent(Home.this,UsersDetails.class));
+                            } else {
+                                adminsOnly();
+                            }
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(getApplicationContext(),"Error occurred: " + error.getMessage(),Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    break;
                 case R.id.logOut:
                     finish();
                     startActivity(new Intent(Home.this, LogIn.class));
@@ -122,6 +141,7 @@ public class Home extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for(DataSnapshot cartSnapshot : snapshot.getChildren()) {
                     Cart cart = cartSnapshot.getValue(Cart.class);
+                    assert cart != null;
                     if(cart.getUserID().equals(mAuth.getUid())) {
                         cartImage.setVisibility(View.VISIBLE);
                         break;
@@ -150,7 +170,7 @@ public class Home extends AppCompatActivity {
                     NavigationView navigationView = findViewById(R.id.nav_view);
                     View headerView = navigationView.getHeaderView(0);
                     TextView navUsername = headerView.findViewById(R.id.navigationDrawerName);
-                    navUsername.setText(user.getName());
+                    navUsername.setText("User: " + user.getName());
                 }
             }
 

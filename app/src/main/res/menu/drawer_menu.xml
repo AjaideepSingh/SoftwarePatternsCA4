@@ -7,11 +7,11 @@
         <item
             android:id="@+id/settings"
             android:icon="@drawable/settings"
-            android:title="Settings"/>
+            android:title="My Settings"/>
         <item
             android:id="@+id/reviewsScreen"
             android:icon="@drawable/review"
-            android:title="Product reviews" />
+            android:title="Product Reviews" />
         <item
             android:id="@+id/stockManager"
             android:icon="@drawable/manager"
@@ -20,11 +20,15 @@
         <item
             android:id="@+id/orderHistory"
             android:icon="@drawable/history"
-            android:title="User order history" />
+            android:title="User Order History" />
+
+        <item
+            android:id="@+id/userDetails"
+            android:title="User Details" />
 
         <item
             android:id="@+id/logOut"
             android:icon="@drawable/exit"
-            android:title="Log out" />
+            android:title="Log Out" />
     </group>
 </menu>

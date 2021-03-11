@@ -15,6 +15,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
+import java.util.Objects;
 import Adapters.ReviewAdapter;
 import Model.Review;
 
@@ -27,6 +28,7 @@ public class Reviews extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reviews);
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Product Reviews");
         recyclerView = findViewById(R.id.reviewRCV);
         EditText search = findViewById(R.id.reviewSearch);
         search.addTextChangedListener(new TextWatcher() {

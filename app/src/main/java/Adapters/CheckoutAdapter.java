@@ -34,7 +34,7 @@ public class CheckoutAdapter extends RecyclerView.Adapter<CheckoutAdapter.ViewHo
     public void onBindViewHolder(@NonNull CheckoutAdapter.ViewHolder holder, final int position) {
         holder.setImage(cartArrayList.get(position).getItem().getImage());
         holder.setPrice(String.valueOf(cartArrayList.get(position).getItem().getPrice()));
-        holder.setQuantity(String.valueOf(cartArrayList.get(position).getItem().getPrice()));
+        holder.setQuantity(String.valueOf(cartArrayList.get(position).getItem().getStockAmount()));
         holder.setTitle(cartArrayList.get(position).getItem().getTitle());
     }
 
@@ -52,7 +52,7 @@ public class CheckoutAdapter extends RecyclerView.Adapter<CheckoutAdapter.ViewHo
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final ImageView cartImage;
         private final TextView totalPrice;
-        private final EditText quantity;
+        private final TextView quantity;
         private final TextView title;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

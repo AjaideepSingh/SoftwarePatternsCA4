@@ -10,4 +10,5 @@
     <string name="hello_world">Hello Square World!</string>
     <string name="title_activity_reviews">Reviews</string>
     <string name="title_activity_orders">Orders</string>
+    <string name="title_activity_users_details">UsersDetails</string>
 </resources>

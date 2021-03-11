@@ -61,7 +61,7 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
 
     public void populateSpinner() {
         ArrayList<String> accTypes = new ArrayList<>();
-        accTypes.add("Select value!");
+        accTypes.add("Account type?");
         accTypes.add("Customer");
         accTypes.add("Admin");
         ArrayAdapter<String> adapterGender = new ArrayAdapter<String>(SignUp.this, android.R.layout.simple_spinner_dropdown_item, accTypes) {
@@ -130,23 +130,18 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
         } else if (TextUtils.isEmpty(address.getText().toString())) {
             address.setError("Address is required!");
             address.requestFocus();
-        } else if (TextUtils.isEmpty(password.getText().toString())) {
-            password.setError("Password is required!");
+        } else if (TextUtils.isEmpty(password.getText().toString()) || password.getText().toString().length() < 6) {
+            password.setError("6 digit password!");
             password.requestFocus();
-        } else if (TextUtils.isEmpty(cardNo.getText().toString())) {
-            cardNo.setError("Card number is required!");
+        } else if (TextUtils.isEmpty(cardNo.getText().toString()) || cardNo.getText().toString().length() != 16) {
+            cardNo.setError("16 digits only");
             cardNo.requestFocus();
-        }
-        else if (TextUtils.isEmpty(cvv.getText().toString())) {
-            cvv.setError("cvv is required!");
+        } else if (TextUtils.isEmpty(cvv.getText().toString()) || cvv.getText().toString().length() != 3) {
+            cvv.setError("3 digit only");
             cvv.requestFocus();
-        }
-        else if (TextUtils.isEmpty(expiryDate.getText().toString())) {
+        } else if (TextUtils.isEmpty(expiryDate.getText().toString())) {
             expiryDate.setError("Expiry dare is required!");
             expiryDate.requestFocus();
-        } else if (password.getText().toString().length() < 6) {
-            password.setError("Password length must be at least 6 characters.");
-            password.requestFocus();
         }  else {
             mAuth.createUserWithEmailAndPassword(emailAddress.getText().toString().trim(), password.getText().toString()).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {

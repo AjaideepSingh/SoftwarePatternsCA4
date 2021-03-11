@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -17,7 +18,7 @@ import Model.Order;
 public class Orders extends AppCompatActivity {
     private RecyclerView recyclerView;
     private OrderAdapter orderAdapter;
-    private ArrayList<Order> orders = new ArrayList<>();
+    private final ArrayList<Order> orders = new ArrayList<>();
 
 
     @Override
@@ -37,6 +38,10 @@ public class Orders extends AppCompatActivity {
                     Order order = orderSnapshot.getValue(Order.class);
                     orders.add(order);
                 }
+                recyclerView.setHasFixedSize(true);
+                recyclerView.setLayoutManager(new LinearLayoutManager(Orders.this));
+                orderAdapter = new OrderAdapter(orders,Orders.this);
+                recyclerView.setAdapter(orderAdapter);
             }
 
             @Override
