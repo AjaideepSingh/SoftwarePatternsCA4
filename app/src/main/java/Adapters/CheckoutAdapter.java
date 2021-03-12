@@ -5,7 +5,6 @@ import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -47,13 +46,9 @@ public class CheckoutAdapter extends RecyclerView.Adapter<CheckoutAdapter.ViewHo
     public void onClick(View v) {
     }
 
-
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final ImageView cartImage;
-        private final TextView totalPrice;
-        private final TextView quantity;
-        private final TextView title;
+        private final TextView totalPrice,quantity,title;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.cartTitle);

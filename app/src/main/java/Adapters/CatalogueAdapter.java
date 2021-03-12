@@ -33,14 +33,12 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.Objects;
-
-import Authentication.SignUp;
 import Model.Cart;
 import Model.Item;
 import Model.Review;
 
 public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.ViewHolder> implements View.OnClickListener, AdapterView.OnItemSelectedListener {
-    private final ArrayList<Item> items;
+    private ArrayList<Item> items;
     private final Context context;
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private String ratingMeasure;
@@ -228,6 +226,11 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
             });
             popup.show();
         });
+    }
+
+    public  void filteredList(ArrayList<Item> filteredList) {
+        items = filteredList;
+        notifyDataSetChanged();
     }
 
     @Override

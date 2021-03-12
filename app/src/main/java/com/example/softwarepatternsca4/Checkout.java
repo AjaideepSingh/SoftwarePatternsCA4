@@ -163,8 +163,8 @@ public class Checkout extends AppCompatActivity {
             @Override
             public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
                 new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-                        .addBackgroundColor(ContextCompat.getColor(Checkout.this, R.color.black))
-                        .addActionIcon(R.drawable.settings)
+                        .addBackgroundColor(ContextCompat.getColor(Checkout.this, R.color.navHeader))
+                        .addActionIcon(R.drawable.delete)
                         .create()
                         .decorate();
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
@@ -189,7 +189,6 @@ public class Checkout extends AppCompatActivity {
                                 updateReference.child(item.getId()).child("stockAmount").setValue(item.getStockAmount() + cart.getItem().getStockAmount()).addOnCompleteListener(task -> {
                                     if (task.isSuccessful()) {
                                         Toast.makeText(Checkout.this, "Item removed from basket", Toast.LENGTH_SHORT).show();
-
                                     } else {
                                         Toast.makeText(Checkout.this, "Error occurred: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                                     }
@@ -204,6 +203,11 @@ public class Checkout extends AppCompatActivity {
                         Toast.makeText(Checkout.this, "Error occurred: " + error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+                if(cartArrayList.isEmpty()) {
+                    ImageView imageView = ((Home) getApplicationContext()).findViewById(R.id.cart);
+                    imageView.setVisibility(View.VISIBLE);
+                    startActivity(new Intent(Checkout.this,Home.class));
+                }
             }
         };
 

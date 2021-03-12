@@ -12,6 +12,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
+import java.util.Objects;
+
 import Adapters.OrderAdapter;
 import Model.Order;
 
@@ -20,12 +22,12 @@ public class Orders extends AppCompatActivity {
     private OrderAdapter orderAdapter;
     private final ArrayList<Order> orders = new ArrayList<>();
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_orders);
         recyclerView = findViewById(R.id.orderRCV);
+        Objects.requireNonNull(getSupportActionBar()).setTitle("User Order History");
         showAllOrders();
     }
 

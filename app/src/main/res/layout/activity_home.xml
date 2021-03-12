@@ -28,28 +28,39 @@
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/catalogueRCV"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="628dp"
                 tools:ignore="MissingConstraints" />
+
+            <EditText
+                android:id="@+id/filterHome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:hint="Search by fields!"
+                android:inputType="textPersonName"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="@color/black" />
         </FrameLayout>
     </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/homeCL"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:ignore="ExtraText">
 
         <ImageView
             android:id="@+id/cart"
             android:layout_width="119dp"
             android:layout_height="54dp"
-            android:layout_marginStart="285dp"
+            android:layout_marginStart="1dp"
             android:src="@drawable/cart"
             android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -29,7 +29,7 @@ import java.util.Objects;
 import Model.Item;
 
 public class ManagerCatalogueAdapter extends RecyclerView.Adapter<ManagerCatalogueAdapter.ViewHolder> implements View.OnClickListener {
-    private final ArrayList<Item> items;
+    private ArrayList<Item> items;
     private final Context context;
 
     public ManagerCatalogueAdapter(ArrayList<Item> items, Context context) {
@@ -141,6 +141,11 @@ public class ManagerCatalogueAdapter extends RecyclerView.Adapter<ManagerCatalog
             });
             popup.show();
         });
+    }
+
+    public  void filteredList(ArrayList<Item> filteredList) {
+        items = filteredList;
+        notifyDataSetChanged();
     }
 
     @Override

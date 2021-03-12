@@ -24,6 +24,7 @@
 
         <item
             android:id="@+id/userDetails"
+            android:icon="@drawable/employee"
             android:title="User Details" />
 
         <item

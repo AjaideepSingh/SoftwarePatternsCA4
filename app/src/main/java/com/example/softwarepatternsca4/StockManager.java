@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
@@ -15,7 +16,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -49,6 +53,8 @@ public class StockManager extends AppCompatActivity {
     private Uri mImageUri;
     private String imageDownloadUrl;
     private ImageView itemPicture;
+    private ConstraintLayout constraintLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +64,8 @@ public class StockManager extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setTitle("Stock manager");
         ImageView createStock = findViewById(R.id.post);
         recyclerView = findViewById(R.id.stockManagerRecyclerView);
+        EditText search = findViewById(R.id.managerSearch);
+        constraintLayout = findViewById(R.id.smcl);
         showAllStock();
         createStock.setOnClickListener(v -> {
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Item");
@@ -80,6 +88,32 @@ public class StockManager extends AppCompatActivity {
                 }
             });
         });
+        search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filter(s.toString());
+            }
+        });
+    }
+
+    public void filter(String text) {
+        ArrayList<Item> filteredList = new ArrayList<>();
+        for(Item item : items) {
+            if (item.getTitle().toLowerCase().contains(text.toLowerCase()) || item.getCategory().toLowerCase().contains(text.toLowerCase()) || item.getManufacturer().toLowerCase().contains(text.toLowerCase())) {
+                filteredList.add(item);
+            }
+        }
+        managerCatalogueAdapter.filteredList(filteredList);
     }
 
     public void createStock(ArrayList<String> itemTitles) {
@@ -158,13 +192,13 @@ public class StockManager extends AppCompatActivity {
                 title.requestFocus();
             } else {
                 dialog.dismiss();
+                items.clear();
+                managerCatalogueAdapter.notifyDataSetChanged();
                 Item item = new Item(title.getText().toString(),manufacturer.getText().toString(),category.getSelectedItem().toString(),imageDownloadUrl,Double.parseDouble(price.getText().toString()),Integer.parseInt(stock.getText().toString()));
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Item");
                 databaseReference.push().setValue(item).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Toast.makeText(StockManager.this, "Item added to catalogue!", Toast.LENGTH_SHORT).show();
-                        items.clear();
-                        showAllStock();
+                        showInfoSnackBar();
                     } else {
                         Toast.makeText(StockManager.this, "Error Occurred" + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                     }
@@ -236,5 +270,10 @@ public class StockManager extends AppCompatActivity {
         } else {
             Toast.makeText(StockManager.this, "No file selected", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void showInfoSnackBar() {
+        Snackbar snackbar = Snackbar.make(constraintLayout, "Item added to catalogue", Snackbar.LENGTH_SHORT);
+        snackbar.show();
     }
 }

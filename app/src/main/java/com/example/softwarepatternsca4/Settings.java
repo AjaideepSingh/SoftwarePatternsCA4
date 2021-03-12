@@ -64,6 +64,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User user = snapshot.getValue(User.class);
+                assert user != null;
                 name.setText(user.getName());
                 cardNumber.setText(user.getCardNumber());
                 CVV.setText(user.getCvv());

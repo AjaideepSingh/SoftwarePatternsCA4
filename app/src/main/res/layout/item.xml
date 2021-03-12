@@ -11,7 +11,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="150dp">
+        android:layout_height="120dp">
 
         <ImageView
             android:id="@+id/itemPicture"
@@ -42,7 +42,6 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="11dp"
-            android:layout_marginTop="5dp"
             android:layout_marginEnd="79dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             app:layout_constraintEnd_toEndOf="parent"
@@ -55,7 +54,6 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="11dp"
-            android:layout_marginTop="5dp"
             android:layout_marginEnd="129dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             app:layout_constraintEnd_toEndOf="parent"
@@ -68,7 +66,6 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="11dp"
-            android:layout_marginTop="5dp"
             android:layout_marginEnd="108dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             app:layout_constraintEnd_toStartOf="@+id/itemOptions"
@@ -93,7 +90,6 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="11dp"
-            android:layout_marginTop="5dp"
             android:layout_marginEnd="159dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             app:layout_constraintEnd_toEndOf="parent"

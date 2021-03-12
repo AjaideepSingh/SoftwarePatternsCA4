@@ -85,7 +85,6 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
         adapterGender.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         accountType.setAdapter(adapterGender);
         accountType.setOnItemSelectedListener(SignUp.this);
-
         ArrayList<String> studentAccount = new ArrayList<>();
         studentAccount.add("Are you a student?");
         studentAccount.add("Student Account");

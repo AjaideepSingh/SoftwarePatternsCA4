@@ -24,8 +24,8 @@ import Model.Order;
 import Model.User;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> implements View.OnClickListener {
-    private ArrayList<Order> orders;
-    private Context context;
+    private final ArrayList<Order> orders;
+    private final Context context;
 
     public OrderAdapter(ArrayList<Order> orders,Context context) {
         this.orders = orders;

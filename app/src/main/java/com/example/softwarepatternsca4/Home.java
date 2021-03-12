@@ -11,8 +11,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,23 +43,136 @@ public class Home extends AppCompatActivity {
     private CatalogueAdapter catalogueAdapter;
     private ImageView cartImage;
     private ConstraintLayout constraintLayout;
+    private NavigationView navigationView;
+    private Toolbar toolbar;
 
     @SuppressLint({"WrongConstant", "NonConstantResourceId"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        Toolbar toolbar = findViewById(R.id.homeToolBar);
+        toolbar = findViewById(R.id.homeToolBar);
         setSupportActionBar(toolbar);
-        Objects.requireNonNull(getSupportActionBar()).setTitle("Online catalogue");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("");
         recyclerView = findViewById(R.id.catalogueRCV);
         drawerLayout = findViewById(R.id.a);
         cartImage = findViewById(R.id.cart);
         cartImage.setOnClickListener(v -> startActivity(new Intent(Home.this,Checkout.class)));
         constraintLayout = findViewById(R.id.homeCL);
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
+        EditText search = findViewById(R.id.filterHome);
         getUserDetailsToPopulateHeader();
         navigationView.setItemIconTintList(null);
+        navNavigator();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Cart");
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for(DataSnapshot cartSnapshot : snapshot.getChildren()) {
+                    Cart cart = cartSnapshot.getValue(Cart.class);
+                    assert cart != null;
+                    if(cart.getUserID().equals(mAuth.getUid())) {
+                        cartImage.setVisibility(View.VISIBLE);
+                        break;
+                    } else {
+                        cartImage.setVisibility(View.INVISIBLE);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getApplicationContext(),"Error Occurred: " + error.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+        getAllItems();
+        search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filter(s.toString());
+            }
+        });
+    }
+
+    private void filter(String text) {
+        ArrayList<Item> filteredList = new ArrayList<>();
+        for(Item item : items) {
+            if (item.getTitle().toLowerCase().contains(text.toLowerCase()) || item.getCategory().toLowerCase().contains(text.toLowerCase()) || item.getManufacturer().toLowerCase().contains(text.toLowerCase())) {
+                filteredList.add(item);
+            }
+        }
+        catalogueAdapter.filteredList(filteredList);
+    }
+
+    public void getUserDetailsToPopulateHeader() {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("User").child(Objects.requireNonNull(mAuth.getUid()));
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User user = snapshot.getValue(User.class);
+                if (user != null) {
+                    NavigationView navigationView = findViewById(R.id.nav_view);
+                    View headerView = navigationView.getHeaderView(0);
+                    TextView navUsername = headerView.findViewById(R.id.navigationDrawerName);
+                    navUsername.setText("User: " + user.getName());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getApplicationContext(),"Error Occurred: " + error.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void getAllItems() {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Item");
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for(DataSnapshot itemSnapshot : snapshot.getChildren()) {
+                    Item item = itemSnapshot.getValue(Item.class);
+                    items.add(item);
+                }
+                if(items.isEmpty()) {
+                    showInfoSnackBar();
+                }
+                recyclerView.setHasFixedSize(true);
+                recyclerView.setLayoutManager(new LinearLayoutManager(Home.this));
+                catalogueAdapter = new CatalogueAdapter(items,Home.this);
+                recyclerView.setAdapter(catalogueAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getApplicationContext(),"Error Occurred: " + error.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void showInfoSnackBar() {
+        Snackbar snackbar = Snackbar.make(constraintLayout, "Sorry no products for sale!", Snackbar.LENGTH_LONG);
+        snackbar.show();
+    }
+
+    public void adminsOnly() {
+        Snackbar snackbar = Snackbar.make(constraintLayout, "Admins access only", Snackbar.LENGTH_LONG);
+        snackbar.show();
+    }
+
+    @SuppressLint({"WrongConstant", "NonConstantResourceId"})
+    public void navNavigator() {
         navigationView.setNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.settings:
@@ -135,84 +251,5 @@ public class Home extends AppCompatActivity {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Cart");
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for(DataSnapshot cartSnapshot : snapshot.getChildren()) {
-                    Cart cart = cartSnapshot.getValue(Cart.class);
-                    assert cart != null;
-                    if(cart.getUserID().equals(mAuth.getUid())) {
-                        cartImage.setVisibility(View.VISIBLE);
-                        break;
-                    } else {
-                        cartImage.setVisibility(View.INVISIBLE);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getApplicationContext(),"Error Occurred: " + error.getMessage(),Toast.LENGTH_SHORT).show();
-            }
-        });
-        getAllItems();
-    }
-
-    public void getUserDetailsToPopulateHeader() {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("User").child(Objects.requireNonNull(mAuth.getUid()));
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                User user = snapshot.getValue(User.class);
-                if (user != null) {
-                    NavigationView navigationView = findViewById(R.id.nav_view);
-                    View headerView = navigationView.getHeaderView(0);
-                    TextView navUsername = headerView.findViewById(R.id.navigationDrawerName);
-                    navUsername.setText("User: " + user.getName());
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getApplicationContext(),"Error Occurred: " + error.getMessage(),Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public void getAllItems() {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Item");
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for(DataSnapshot itemSnapshot : snapshot.getChildren()) {
-                    Item item = itemSnapshot.getValue(Item.class);
-                    items.add(item);
-                }
-                if(items.isEmpty()) {
-                    showInfoSnackBar();
-                }
-                recyclerView.setHasFixedSize(true);
-                recyclerView.setLayoutManager(new LinearLayoutManager(Home.this));
-                catalogueAdapter = new CatalogueAdapter(items,Home.this);
-                recyclerView.setAdapter(catalogueAdapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getApplicationContext(),"Error Occurred: " + error.getMessage(),Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public void showInfoSnackBar() {
-        Snackbar snackbar = Snackbar.make(constraintLayout, "Sorry no products for sale!", Snackbar.LENGTH_LONG);
-        snackbar.show();
-    }
-
-    public void adminsOnly() {
-        Snackbar snackbar = Snackbar.make(constraintLayout, "Admins access only", Snackbar.LENGTH_LONG);
-        snackbar.show();
     }
 }
