@@ -155,7 +155,16 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
         }  else {
             mAuth.createUserWithEmailAndPassword(emailAddress.getText().toString().trim(), password.getText().toString()).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    User user = new User(userName.getText().toString().trim(),address.getText().toString().trim(),emailAddress.getText().toString().trim(),cardNo.getText().toString(),cvv.getText().toString(),expiryDate.getText().toString(),accountType.getSelectedItem().toString(),discount.getSelectedItem().toString());
+                    //User user = new User(userName.getText().toString().trim(),address.getText().toString().trim(),emailAddress.getText().toString().trim(),cardNo.getText().toString(),cvv.getText().toString(),expiryDate.getText().toString(),accountType.getSelectedItem().toString(),discount.getSelectedItem().toString());
+                    User user =  new User.Builder()
+                            .setName(userName.getText().toString())
+                            .setShippingAddress(address.getText().toString().trim())
+                            .setEmailAddress(emailAddress.getText().toString().trim())
+                            .setCardNumber(cardNo.getText().toString().trim())
+                            .setCvv(cvv.getText().toString())
+                            .setExpiryDate(expiryDate.getText().toString())
+                            .setAccType(accountType.getSelectedItem().toString())
+                            .setStudent(discount.getSelectedItem().toString()).create();
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                     databaseReference.child("User").child(Objects.requireNonNull(mAuth.getUid())).setValue(user).addOnCompleteListener(task1 -> {
                                 if (task1.isSuccessful()) {
