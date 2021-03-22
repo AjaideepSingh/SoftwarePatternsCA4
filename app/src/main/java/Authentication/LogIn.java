@@ -26,6 +26,10 @@ public class LogIn extends AppCompatActivity {
         emailAddress = findViewById(R.id.userNameLogIn);
         password = findViewById(R.id.passwordTextField);
         TextView createAcc = findViewById(R.id.createAccount);
+        if(mAuth.getCurrentUser() != null) {
+            startActivity(new Intent(LogIn.this, Home.class));
+            return;
+        }
         createAcc.setOnClickListener(v -> {
             startActivity(new Intent(getApplicationContext(), SignUp.class));
         });

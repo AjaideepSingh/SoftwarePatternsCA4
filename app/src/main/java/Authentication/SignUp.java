@@ -1,5 +1,6 @@
 package Authentication;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -34,6 +35,16 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
     private EditText emailAddress, userName, password,address,cardNo,cvv,expiryDate;
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private Spinner accountType,discount;
+
+    @SuppressLint("StaticFieldLeak")
+    private static SignUp instance;
+    public static SignUp getInstance() {
+        if (instance == null) {
+            instance = new SignUp();
+        }
+        return instance;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

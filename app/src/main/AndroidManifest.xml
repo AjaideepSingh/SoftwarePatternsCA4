@@ -38,5 +38,4 @@
         <activity android:name=".Orders" />
         <activity android:name="UsersDetails" />
     </application>
-
 </manifest>

@@ -110,11 +110,11 @@ public class UsersDetails extends AppCompatActivity implements AdapterView.OnIte
                     User user = userSnapshot.getValue(User.class);
                     assert user != null;
                     if(user.getName().equalsIgnoreCase(userName)) {
-                        name.setText(user.getName());
-                        address.setText(user.getShippingAddress());
-                        email.setText(user.getEmailAddress());
-                        accountType.setText(user.getAccType());
-                        student.setText(user.getStudent());
+                        name.setText("User name: " + user.getName());
+                        address.setText("Address: " + user.getShippingAddress());
+                        email.setText("Email: " + user.getEmailAddress());
+                        accountType.setText("Account type: " + user.getAccType());
+                        student.setText("Student? : " + user.getStudent());
                         name.setVisibility(View.VISIBLE);
                         address.setVisibility(View.VISIBLE);
                         email.setVisibility(View.VISIBLE);
