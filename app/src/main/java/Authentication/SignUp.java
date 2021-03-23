@@ -2,11 +2,8 @@ package Authentication;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -19,8 +16,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import com.example.softwarepatternsca4.Home;
 import com.example.softwarepatternsca4.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -132,7 +127,7 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
             dlgAlert.setCancelable(true);
             dlgAlert.create().show();
         } else if (TextUtils.isEmpty(userName.getText().toString().trim())) {
-            userName.setError("User Name is required!");
+            userName.setError("Name is required!");
             userName.requestFocus();
         } else if (TextUtils.isEmpty(emailAddress.getText().toString().trim())) {
             emailAddress.setError("Email is required!");
@@ -155,7 +150,6 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
         }  else {
             mAuth.createUserWithEmailAndPassword(emailAddress.getText().toString().trim(), password.getText().toString()).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    //User user = new User(userName.getText().toString().trim(),address.getText().toString().trim(),emailAddress.getText().toString().trim(),cardNo.getText().toString(),cvv.getText().toString(),expiryDate.getText().toString(),accountType.getSelectedItem().toString(),discount.getSelectedItem().toString());
                     User user =  new User.Builder()
                             .setName(userName.getText().toString())
                             .setShippingAddress(address.getText().toString().trim())
@@ -168,17 +162,7 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                     databaseReference.child("User").child(Objects.requireNonNull(mAuth.getUid())).setValue(user).addOnCompleteListener(task1 -> {
                                 if (task1.isSuccessful()) {
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                        NotificationChannel notificationChannel = new NotificationChannel("My Notification", "test", NotificationManager.IMPORTANCE_DEFAULT);
-                                        NotificationManager notificationManager = getSystemService(NotificationManager.class);
-                                        notificationManager.createNotificationChannel(notificationChannel);
-                                    }
-                                    String message = "Thank you for creating an account with us!";
-                                    NotificationCompat.Builder builder = new NotificationCompat.Builder(SignUp.this, "My Notification").setSmallIcon(
-                                            R.drawable.info).setContentTitle("Welcome").setContentText(message).setAutoCancel(true);
-                                    NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(SignUp.this);
-                                    notificationManagerCompat.notify(0, builder.build());
-                                    Toast.makeText(getApplicationContext(), "User Saved Successfully!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), "Account created!", Toast.LENGTH_SHORT).show();
                                     startActivity(new Intent(getApplicationContext(), Home.class));
                                     userName.setText("");
                                     emailAddress.setText("");

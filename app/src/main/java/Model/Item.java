@@ -73,17 +73,4 @@ public class Item {
         this.price = price;
         this.stockAmount = stockAmount;
     }
-
-    @Override
-    public String toString() {
-        return "Item{" +
-                "title='" + title + '\'' +
-                ", manufacturer='" + manufacturer + '\'' +
-                ", category='" + category + '\'' +
-                ", image='" + image + '\'' +
-                ", id='" + id + '\'' +
-                ", price=" + price +
-                ", stockAmount=" + stockAmount +
-                '}';
-    }
 }

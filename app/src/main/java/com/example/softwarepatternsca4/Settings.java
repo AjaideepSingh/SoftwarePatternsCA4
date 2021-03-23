@@ -75,6 +75,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
                 for (int i = 0; i < accountTypes.size(); i++) {
                     if (accountTypes.get(i).equalsIgnoreCase(user.getAccType())) {
                         studentSpinner.setSelection(i);
+                        break;
                     }
                 }
             }
@@ -122,6 +123,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
                     for(int i = 0; i < accountTypes.size(); i++){
                         if(accountTypes.get(i).equalsIgnoreCase(user.getAccType())) {
                             studentSpinner.setSelection(i);
+                            break;
                         }
                     }
                 }

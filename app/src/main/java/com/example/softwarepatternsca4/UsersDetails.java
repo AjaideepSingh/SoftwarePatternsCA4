@@ -1,5 +1,6 @@
 package com.example.softwarepatternsca4;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -104,6 +105,7 @@ public class UsersDetails extends AppCompatActivity implements AdapterView.OnIte
     public void populateUI(String userName) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("User");
         databaseReference.addValueEventListener(new ValueEventListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for(DataSnapshot userSnapshot : snapshot.getChildren()) {

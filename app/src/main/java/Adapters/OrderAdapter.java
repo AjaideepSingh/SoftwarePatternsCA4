@@ -1,5 +1,6 @@
 package Adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -81,14 +82,17 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
             stock = itemView.findViewById(R.id.orderRowQuantity);
         }
 
+        @SuppressLint("SetTextI18n")
         public void setTitle(String t) {
             title.setText("Title: " + t);
         }
 
+        @SuppressLint("SetTextI18n")
         public void setUserName(String un) {
             userName.setText("User: " + un);
         }
 
+        @SuppressLint("SetTextI18n")
         public void setStock(String r) {
             stock.setText(r + " Quantity");
         }

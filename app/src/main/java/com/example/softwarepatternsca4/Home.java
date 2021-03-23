@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 import Adapters.CatalogueAdapter;
 import Authentication.LogIn;
-import Model.Cart;
 import Model.Item;
 import Model.User;
 
@@ -39,7 +38,6 @@ public class Home extends AppCompatActivity {
     private RecyclerView recyclerView;
     private final ArrayList<Item> items = new ArrayList<>();
     private CatalogueAdapter catalogueAdapter;
-    private ImageView cartImage;
     private NavigationView navigationView;
     private Toolbar toolbar;
 
@@ -53,34 +51,13 @@ public class Home extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setTitle("Catalogue");
         recyclerView = findViewById(R.id.catalogueRCV);
         drawerLayout = findViewById(R.id.a);
-        cartImage = findViewById(R.id.cart);
+        ImageView cartImage = findViewById(R.id.cart);
         cartImage.setOnClickListener(v -> startActivity(new Intent(Home.this, Checkout.class)));
         navigationView = findViewById(R.id.nav_view);
         EditText search = findViewById(R.id.filterHome);
         getUserDetailsToPopulateHeader();
         navigationView.setItemIconTintList(null);
         checkUserRights();
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Cart");
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot cartSnapshot : snapshot.getChildren()) {
-                    Cart cart = cartSnapshot.getValue(Cart.class);
-                    assert cart != null;
-                    if (cart.getUserID().equals(mAuth.getUid())) {
-                        cartImage.setVisibility(View.VISIBLE);
-                        break;
-                    } else {
-                        cartImage.setVisibility(View.INVISIBLE);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getApplicationContext(), "Error Occurred: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
         getAllItems();
         search.addTextChangedListener(new TextWatcher() {
             @Override

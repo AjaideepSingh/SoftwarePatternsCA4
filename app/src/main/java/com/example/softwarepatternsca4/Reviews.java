@@ -31,34 +31,34 @@ public class Reviews extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setTitle("Product Reviews");
         recyclerView = findViewById(R.id.reviewRCV);
         EditText search = findViewById(R.id.reviewSearch);
-        search.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                filter(s.toString());
-            }
-        });
+//        search.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                filter(s.toString());
+//            }
+//        });
         getAllReviews();
     }
 
-    private void filter(String text) {
-        ArrayList<Review> filteredList = new ArrayList<>();
-        for(Review review : reviews) {
-            if (review.getProductTitle().toLowerCase().contains(text.toLowerCase())) {
-                filteredList.add(review);
-            }
-        }
-        reviewAdapter.filteredList(filteredList);
-    }
+//    private void filter(String text) {
+//        ArrayList<Review> filteredList = new ArrayList<>();
+//        for(Review review : reviews) {
+//            if (review.getProductTitle().toLowerCase().contains(text.toLowerCase())) {
+//                filteredList.add(review);
+//            }
+//        }
+//        reviewAdapter.filteredList(filteredList);
+//    }
 
     public void getAllReviews() {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Review");

@@ -1,5 +1,6 @@
 package Adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,11 +65,6 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
     public void onClick(View v) {
     }
 
-    public  void filteredList(ArrayList<Review> filteredList) {
-        reviews = filteredList;
-        notifyDataSetChanged();
-    }
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView title, userName, review, rating;
 
@@ -80,18 +76,22 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
             rating = itemView.findViewById(R.id.reviewRowRating);
         }
 
+        @SuppressLint("SetTextI18n")
         public void setTitle(String t) {
             title.setText("Title: " + t);
         }
 
+        @SuppressLint("SetTextI18n")
         public void setUserName(String un) {
             userName.setText("User: " + un);
         }
 
+        @SuppressLint("SetTextI18n")
         public void setReview(String r) {
             review.setText("Review: " + r);
         }
 
+        @SuppressLint("SetTextI18n")
         public void setRating(String ra) {
             rating.setText(ra + " Stars");
         }

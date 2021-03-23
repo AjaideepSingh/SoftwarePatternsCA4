@@ -113,8 +113,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
 
                             }
                         });
-                        builder.setPositiveButton("add", (rDialog, which) -> {
-                        });
+                        builder.setPositiveButton("add", (rDialog, which) -> { });
                         builder.setNegativeButton("Close", (rDialog, which) -> rDialog.cancel());
                         builder.setView(reviewView);
                         AlertDialog rDialog = builder.create();
@@ -149,8 +148,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                         View view = inflater.inflate(R.layout.addtocartpopup, null);
                         quantity = view.findViewById(R.id.quantity);
-                        builder.setPositiveButton("add", (dialog, which) -> {
-                        });
+                        builder.setPositiveButton("add", (dialog, which) -> { });
                         builder.setNegativeButton("Close", (dialog, which) -> dialog.cancel());
                         builder.setView(view);
                         AlertDialog dialog = builder.create();
@@ -198,7 +196,6 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                                                                     }
                                                                 }
                                                             }
-
                                                             @Override
                                                             public void onCancelled(@NonNull DatabaseError error) {
                                                                 Toast.makeText(context, "Error occurred: " + Objects.requireNonNull(error.getMessage()), Toast.LENGTH_SHORT).show();
@@ -212,13 +209,11 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                                         }
                                     }
                                 }
-
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError error) {
                                     Toast.makeText(context, "Error occurred: " + Objects.requireNonNull(error.getMessage()), Toast.LENGTH_SHORT).show();
                                 }
                             });
-
                         });
                         break;
                 }
@@ -275,22 +270,27 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
             });
         }
 
+        @SuppressLint("SetTextI18n")
         public void setTitle(String t) {
             title.setText("Title: " + t);
         }
 
+        @SuppressLint("SetTextI18n")
         public void setPrice(String p) {
             price.setText(p + " Euros");
         }
 
+        @SuppressLint("SetTextI18n")
         public void setCategory(String c) {
             category.setText("Category: " + c);
         }
 
+        @SuppressLint("SetTextI18n")
         public void setManufacturer(String m) {
             manufacturer.setText("Manufacturer: " + m);
         }
 
+        @SuppressLint("SetTextI18n")
         public void setStock(String s) {
             stock.setText(s + " Left");
         }

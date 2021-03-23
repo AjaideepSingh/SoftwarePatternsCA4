@@ -17,6 +17,7 @@
         android:layout_marginBottom="3dp"
         app:layout_constraintBottom_toTopOf="@+id/checkout"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -36,9 +37,10 @@
         android:layout_height="50dp"
         android:layout_marginEnd="1dp"
         android:gravity="center"
+        android:text="0 Euros"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         android:textColor="@color/black"
         android:textSize="16sp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         app:layout_constraintEnd_toStartOf="@+id/checkout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/checkoutRCV" />
