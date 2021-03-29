@@ -1,6 +1,7 @@
 package com.example.softwarepatternsca4;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -10,6 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -17,8 +20,13 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.material.navigation.NavigationView;
@@ -28,6 +36,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -45,8 +54,10 @@ public class Home extends AppCompatActivity {
     private CatalogueAdapter catalogueAdapter;
     private NavigationView navigationView;
     private Toolbar toolbar;
-    private ImageView up,down;
     private final ArrayList<Item> filteredList = new ArrayList<>();
+    private Button filter;
+    private String filterType;
+    private String objectVariable;
     private EditText search;
 
     @SuppressLint({"WrongConstant", "NonConstantResourceId"})
@@ -63,8 +74,7 @@ public class Home extends AppCompatActivity {
         cartImage.setOnClickListener(v -> startActivity(new Intent(Home.this, Checkout.class)));
         navigationView = findViewById(R.id.nav_view);
         search = findViewById(R.id.filterHome);
-        up = findViewById(R.id.ascending);
-        down = findViewById(R.id.descending);
+        filter = findViewById(R.id.filter);
         getUserDetailsToPopulateHeader();
         navigationView.setItemIconTintList(null);
         checkUserRights();
@@ -96,50 +106,153 @@ public class Home extends AppCompatActivity {
         }
         catalogueAdapter.filteredList(filteredList);
         if(!filteredList.isEmpty()) {
-            up.setVisibility(View.VISIBLE);
-            down.setVisibility(View.VISIBLE);
+            filter.setVisibility(View.VISIBLE);
         }
-        if(filteredList.isEmpty() || TextUtils.isEmpty(search.getText().toString())) {
-            up.setVisibility(View.INVISIBLE);
-            down.setVisibility(View.INVISIBLE);
+        if(TextUtils.isEmpty(search.getText().toString())) {
+            filter.setVisibility(View.INVISIBLE);
         }
-
-        up.setOnClickListener(new View.OnClickListener() {
+        filter.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
-                Collections.sort(filteredList, new Comparator<Item>() {
-                    @Override
-                    public int compare(Item o1, Item o2) {
-                        //Log.i("test","" + (int) (o1.getPrice() - o2.getPrice()));
-                        Log.i("test1","" + o1.getPrice());
-                        Log.i("test2","" + o1.getTitle());
-                        Log.i("test3","" + o2.toString());
-                        Log.i("test4","" + (int) (o1.getPrice() - o2.getPrice()));
+                if(items.isEmpty()) {
+                    Toast.makeText(Home.this,"Cannot filter as no items available!",Toast.LENGTH_SHORT).show();
+                } else {
+                    ArrayList<String> filters = new ArrayList<>();
+                    ArrayList<String> objectVariables = new ArrayList<>();
+                    android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(Home.this);
+                    @SuppressLint("InflateParams")
+                    View view = getLayoutInflater().inflate(R.layout.filterdialogue, null);
+                    Spinner filterSpinner = view.findViewById(R.id.spinner4);
+                    Spinner objectVariableSpinner = view.findViewById(R.id.spinner5);
+                    filters.add("Select Filter!");
+                    filters.add("Descending");
+                    filters.add("Ascending");
+                    objectVariables.add("Select Filtering Type!");
+                    objectVariables.add("Category");
+                    objectVariables.add("Title");
+                    objectVariables.add("Price");
+                    objectVariables.add("Manufacturer");
+                    ArrayAdapter filterAdapter = new ArrayAdapter(Home.this, android.R.layout.simple_spinner_dropdown_item, filters) {
+                        @Override
+                        public boolean isEnabled(int position) {
+                            return position != 0;
+                        }
 
-                        for(int i = 0; i < filteredList.size(); i++) {
-                            if(!filteredList.get(i).getTitle().equalsIgnoreCase(o1.getTitle())) {
-                                filteredList.remove(i);
+                        @Override
+                        public View getDropDownView(int position, View convertView, @NotNull ViewGroup parent) {
+                            View view = super.getDropDownView(position, convertView, parent);
+                            TextView textview = (TextView) view;
+                            if (position == 0) {
+                                textview.setTextColor(Color.GRAY);
+                            } else {
+                                textview.setTextColor(Color.BLACK);
+                            }
+                            return view;
+                        }
+                    };
+                    filterSpinner.setAdapter(filterAdapter);
+                    filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    filterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            filterType = parent.getItemAtPosition(position).toString();
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
+                    ArrayAdapter objectVariableAdapter = new ArrayAdapter(Home.this, android.R.layout.simple_spinner_dropdown_item, objectVariables) {
+                        @Override
+                        public boolean isEnabled(int position) {
+                            return position != 0;
+                        }
+
+                        @Override
+                        public View getDropDownView(int position, View convertView, @NotNull ViewGroup parent) {
+                            View view = super.getDropDownView(position, convertView, parent);
+                            TextView textview = (TextView) view;
+                            if (position == 0) {
+                                textview.setTextColor(Color.GRAY);
+                            } else {
+                                textview.setTextColor(Color.BLACK);
+                            }
+                            return view;
+                        }
+                    };
+                    objectVariableSpinner.setAdapter(objectVariableAdapter);
+                    objectVariableAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    objectVariableSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            objectVariable = parent.getItemAtPosition(position).toString();
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
+                    builder.setPositiveButton("Create", (dialog, which) -> {});
+                    builder.setNegativeButton("Close", (dialog, which) -> dialog.cancel());
+                    builder.setView(view);
+                    android.app.AlertDialog dialog = builder.create();
+                    dialog.show();
+                    dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener(v1 -> {
+                        if (filterSpinner.getSelectedItemPosition() == 0 || objectVariableSpinner.getSelectedItemPosition() == 0) {
+                            android.app.AlertDialog.Builder dlgAlert = new android.app.AlertDialog.Builder(Home.this);
+                            dlgAlert.setMessage("Select Drop downs");
+                            dlgAlert.setTitle("Error...");
+                            dlgAlert.setPositiveButton("OK", null);
+                            dlgAlert.setCancelable(true);
+                            dlgAlert.create().show();
+                        } else {
+                            dialog.dismiss();
+                            if(filterType.equals("Descending") && objectVariable.equals("Title")) {
+                                Collections.sort(filteredList, Comparator.comparing(Item::getTitle));
+                                Collections.reverse(filteredList);
+                                catalogueAdapter.filteredList(filteredList);
+                            }
+                            if(filterType.equals("Descending") && objectVariable.equals("Category")) {
+                                Collections.sort(filteredList, Comparator.comparing(Item::getTitle));
+                                Collections.reverse(filteredList);
+                                catalogueAdapter.filteredList(filteredList);
+                            }
+                            if(filterType.equals("Descending") && objectVariable.equals("Manufacturer")) {
+                                Collections.sort(filteredList, Comparator.comparing(Item::getTitle));
+                                Collections.reverse(filteredList);
+                                catalogueAdapter.filteredList(filteredList);
+                            }
+                            if(filterType.equals("Descending") && objectVariable.equals("Price")) {
+                                filteredList.sort((o1, o2) -> Double.compare(o2.getPrice(), o1.getPrice()));
+                                Log.i("fl","" + filteredList.toString());
+                                catalogueAdapter.filteredList(filteredList);
+                            }
+                            if(filterType.equals("Ascending") && objectVariable.equals("Title")) {
+                                Collections.sort(filteredList, Comparator.comparing(Item::getTitle));
+                                catalogueAdapter.filteredList(filteredList);
+                            }
+                            if(filterType.equals("Ascending") && objectVariable.equals("Category")) {
+                                Collections.sort(filteredList, Comparator.comparing(Item::getTitle));
+                                catalogueAdapter.filteredList(filteredList);
+                            }
+                            if(filterType.equals("Ascending") && objectVariable.equals("Manufacturer")) {
+                                Collections.sort(filteredList, Comparator.comparing(Item::getTitle));
+                                catalogueAdapter.filteredList(filteredList);
+                            }
+                            if(filterType.equals("Ascending") && objectVariable.equals("Price")) {
+                                filteredList.sort((o1, o2) -> Double.compare(o2.getPrice(), o1.getPrice()));
+                                Collections.reverse(filteredList);
+                                Log.i("fla","" + filteredList.toString());
+                                catalogueAdapter.filteredList(filteredList);
                             }
                         }
-                        Log.i("fl","" + filteredList.toString());
-                        return (int) (o1.getPrice() - o2.getPrice());
-                    }
-                });
+                    });
+                }
             }
         });
-//        down.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Collections.sort(filteredList, new Comparator<Item>() {
-//                    @Override
-//                    public int compare(Item c1, Item c2) {
-//                        Log.i("1","" + c1.toString());
-//                        Log.i("2","" + c2.toString());
-//                        return Double.compare(c1.getPrice(), c2.getPrice());
-//                    }
-//                });
-//            }
-//        });
     }
 
     public void getUserDetailsToPopulateHeader() {

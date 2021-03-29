@@ -223,7 +223,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
         });
     }
 
-    public  void filteredList(ArrayList<Item> filteredList) {
+    public void filteredList(ArrayList<Item> filteredList) {
         items = filteredList;
         notifyDataSetChanged();
     }

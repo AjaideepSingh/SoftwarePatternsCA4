@@ -142,9 +142,10 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         NamesRepository namesRepository = new NamesRepository();
         ArrayList<String> namesInDB = new ArrayList<>();
         for (Iterator iterator = namesRepository.getIterator(names); iterator.hasNext(); ) {
-            namesInDB.add((String) iterator.next());
+            //namesInDB.add((String) iterator.next());
+            namesInDB.add(String.valueOf(iterator.next()).toLowerCase());
         }
-        if(TextUtils.isEmpty(name.getText().toString())) {
+        if(TextUtils.isEmpty(name.getText().toString().trim().toLowerCase())) {
             name.setError("Error Field cannot be empty!");
             name.requestFocus();
         } else if (namesInDB.contains(name.getText().toString()) && !Objects.requireNonNull(mAuth.getUid()).equalsIgnoreCase(userID)) {
@@ -170,7 +171,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
             updateRef.child("expiryDate").setValue(expiryDate.getText().toString().trim());
             updateRef.child("cvv").setValue(CVV.getText().toString().trim());
             updateRef.child("student").setValue(studentSpinner.getSelectedItem().toString());
-            updateRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            updateRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     User user = snapshot.getValue(User.class);
