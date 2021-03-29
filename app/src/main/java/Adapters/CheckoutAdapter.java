@@ -1,5 +1,6 @@
 package Adapters;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
@@ -65,12 +66,15 @@ public class CheckoutAdapter extends RecyclerView.Adapter<CheckoutAdapter.ViewHo
                 cartImage.setImageBitmap(bitmap);
             });
         }
+        @SuppressLint("SetTextI18n")
         public void setPrice(String p) {
             totalPrice.setText(p + " Euros");
         }
+        @SuppressLint("SetTextI18n")
         public void setQuantity(String q) {
            quantity.setText(q + " Amount");
         }
+        @SuppressLint("SetTextI18n")
         public void setTitle(String t) {
             title.setText("Title: " + t);
         }

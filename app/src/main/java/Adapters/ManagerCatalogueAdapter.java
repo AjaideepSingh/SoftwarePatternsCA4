@@ -65,8 +65,7 @@ public class ManagerCatalogueAdapter extends RecyclerView.Adapter<ManagerCatalog
                     EditText stockAmount;
                     stockAmount = view.findViewById(R.id.updateStockEditText);
                     stockAmount.setText(String.valueOf(items.get(position).getStockAmount()));
-                    updateBuilder.setPositiveButton("Update", (dialog, which) -> {
-                    });
+                    updateBuilder.setPositiveButton("Update", (dialog, which) -> { });
                     updateBuilder.setNegativeButton("Close", (dialog, which) -> dialog.cancel());
                     updateBuilder.setView(view);
                     AlertDialog dialog = updateBuilder.create();
@@ -90,7 +89,7 @@ public class ManagerCatalogueAdapter extends RecyclerView.Adapter<ManagerCatalog
                                             dialog.dismiss();
                                             databaseReference.child(item.getId()).child("stockAmount").setValue(Integer.parseInt(stockAmount.getText().toString())).addOnCompleteListener(task -> {
                                                 if (task.isSuccessful()) {
-                                                    Toast.makeText(context, "Item stock updated", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(context, item.getTitle() + " Stock updated", Toast.LENGTH_SHORT).show();
                                                 } else {
                                                     Toast.makeText(context, "Error occurred: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                                                 }

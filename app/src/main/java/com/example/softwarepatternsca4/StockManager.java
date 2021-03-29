@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
@@ -30,7 +29,6 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -69,7 +67,6 @@ public class StockManager extends AppCompatActivity {
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Item");
             databaseReference.addValueEventListener(new ValueEventListener() {
                 final ArrayList<String> itemTitles = new ArrayList<>();
-
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
@@ -160,7 +157,8 @@ public class StockManager extends AppCompatActivity {
             intent.setAction(Intent.ACTION_GET_CONTENT);
             startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1000);
         });
-        builder.setPositiveButton("Create", (dialog, which) -> { });
+        builder.setPositiveButton("Create", (dialog, which) -> {
+        });
         builder.setNegativeButton("Close", (dialog, which) -> dialog.cancel());
         builder.setView(view);
         AlertDialog dialog = builder.create();
@@ -216,10 +214,14 @@ public class StockManager extends AppCompatActivity {
                     item.setId(itemSnapshot.getKey());
                     items.add(item);
                 }
-                recyclerView.setHasFixedSize(true);
-                recyclerView.setLayoutManager(new LinearLayoutManager(StockManager.this));
-                managerCatalogueAdapter = new ManagerCatalogueAdapter(items, StockManager.this);
-                recyclerView.setAdapter(managerCatalogueAdapter);
+                if (items.isEmpty()) {
+                    Toast.makeText(StockManager.this,"No items available!",Toast.LENGTH_SHORT).show();
+                } else {
+                    recyclerView.setHasFixedSize(true);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(StockManager.this));
+                    managerCatalogueAdapter = new ManagerCatalogueAdapter(items, StockManager.this);
+                    recyclerView.setAdapter(managerCatalogueAdapter);
+                }
             }
 
             @Override
@@ -268,5 +270,10 @@ public class StockManager extends AppCompatActivity {
         } else {
             Toast.makeText(StockManager.this, "No file selected", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(StockManager.this, Home.class));
     }
 }

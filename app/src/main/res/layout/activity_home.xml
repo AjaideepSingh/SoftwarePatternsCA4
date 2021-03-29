@@ -46,6 +46,7 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                 android:textColor="@color/black" />
         </FrameLayout>
+
     </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -53,6 +54,24 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:ignore="ExtraText">
+
+        <ImageView
+            android:id="@+id/descending"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/down"
+            app:layout_constraintEnd_toStartOf="@+id/ascending"
+            android:visibility="invisible"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/ascending"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/up"
+            app:layout_constraintEnd_toStartOf="@+id/cart"
+            android:visibility="invisible"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/cart"

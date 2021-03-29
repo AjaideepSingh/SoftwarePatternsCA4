@@ -1,7 +1,6 @@
 package Model;
 
 public class User {
-
     private String name, shippingAddress, emailAddress, cardNumber, cvv, expiryDate, accType, student;
 
     public User() {

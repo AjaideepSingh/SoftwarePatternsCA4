@@ -2,8 +2,12 @@ package com.example.softwarepatternsca4;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,6 +24,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Objects;
+import Authentication.Iterator;
+import Authentication.NamesRepository;
 import Model.User;
 
 public class Settings extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -44,9 +50,54 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         email = findViewById(R.id.settingsEmail);
         accountType = findViewById(R.id.settingsAccountType);
         studentSpinner = findViewById(R.id.studentSettingsSpinner);
+        expiryDate.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String strS = s.toString();
+                if (start == 1 && start+count == 2 && !strS.contains("/")) {
+                    expiryDate.setText(s.toString() + "/");
+                } else if (start == 3 && start-before == 2 && strS.contains("/")) {
+                    expiryDate.setText(s.toString().replace("/", ""));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
         populateSpinner();
         fillFields();
-        update.setOnClickListener(v -> updateUserDetails());
+        update.setOnClickListener(v -> {
+            DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("User");
+            databaseReference1.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    ArrayList<String> names = new ArrayList<>();
+                    String currentUserId = null;
+                    for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                        User user = userSnapshot.getValue(User.class);
+                        assert user != null;
+                        names.add(user.getName());
+                        if(Objects.equals(mAuth.getUid(), userSnapshot.getKey())) {
+                            currentUserId = userSnapshot.getKey();
+                        }
+                    }
+                    updateUserDetails(names,currentUserId);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(getApplicationContext(), "Error occurred: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
     }
 
     public void populateSpinner() {
@@ -87,9 +138,17 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         });
     }
 
-    public void updateUserDetails() {
+    public void updateUserDetails(ArrayList<String> names, String userID) {
+        NamesRepository namesRepository = new NamesRepository();
+        ArrayList<String> namesInDB = new ArrayList<>();
+        for (Iterator iterator = namesRepository.getIterator(names); iterator.hasNext(); ) {
+            namesInDB.add((String) iterator.next());
+        }
         if(TextUtils.isEmpty(name.getText().toString())) {
             name.setError("Error Field cannot be empty!");
+            name.requestFocus();
+        } else if (namesInDB.contains(name.getText().toString()) && !Objects.requireNonNull(mAuth.getUid()).equalsIgnoreCase(userID)) {
+            name.setError("User name already exists");
             name.requestFocus();
         } else if(TextUtils.isEmpty(address.getText().toString())) {
             address.setError("Error Field cannot be empty!");
@@ -110,6 +169,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
             updateRef.child("cardNumber").setValue(cardNumber.getText().toString().trim());
             updateRef.child("expiryDate").setValue(expiryDate.getText().toString().trim());
             updateRef.child("cvv").setValue(CVV.getText().toString().trim());
+            updateRef.child("student").setValue(studentSpinner.getSelectedItem().toString());
             updateRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -144,5 +204,10 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(Settings.this,Home.class));
     }
 }

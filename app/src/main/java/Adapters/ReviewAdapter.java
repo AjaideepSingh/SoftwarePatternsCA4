@@ -20,7 +20,7 @@ import Model.Review;
 import Model.User;
 
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder> implements View.OnClickListener {
-    private ArrayList<Review> reviews;
+    private final ArrayList<Review> reviews;
     private final Context context;
 
     public ReviewAdapter(ArrayList<Review> reviews, Context context) {

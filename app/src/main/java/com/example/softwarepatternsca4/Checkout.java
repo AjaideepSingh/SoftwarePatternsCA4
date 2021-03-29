@@ -1,6 +1,7 @@
 package com.example.softwarepatternsca4;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.widget.Button;
@@ -54,7 +55,6 @@ public class Checkout extends AppCompatActivity {
             if (cartArrayList.isEmpty()) {
                 emptyCart();
             } else {
-                orderProcessed();
                 DatabaseReference removeReference = FirebaseDatabase.getInstance().getReference("Cart");
                 for (int i = 0; i < cartArrayList.size(); i++) {
                     if (cartArrayList.get(i).getUserID().equals(mAuth.getUid())) {
@@ -70,7 +70,8 @@ public class Checkout extends AppCompatActivity {
                     databaseReference.push().setValue(orders.get(i));
                 }
                 total.setText("0 Euros");
-//                startActivity(new Intent(Checkout.this, Home.class));
+                orderProcessed();
+                startActivity(new Intent(Checkout.this, Home.class));
             }
         });
     }
@@ -164,6 +165,7 @@ public class Checkout extends AppCompatActivity {
                             updateReference.child(item.getId()).child("stockAmount").setValue(item.getStockAmount() + cart.getItem().getStockAmount()).addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
                                     Toast.makeText(Checkout.this, "Item removed from basket", Toast.LENGTH_SHORT).show();
+                                    total.setText("0");
                                 } else {
                                     Toast.makeText(Checkout.this, "Error occurred: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                                 }
@@ -199,5 +201,10 @@ public class Checkout extends AppCompatActivity {
     public void emptyCart() {
         Snackbar snackbar = Snackbar.make(constraintLayout, "Your cart is empty!", Snackbar.LENGTH_LONG);
         snackbar.show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(Checkout.this,Home.class));
     }
 }

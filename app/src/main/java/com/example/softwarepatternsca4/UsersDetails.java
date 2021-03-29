@@ -1,6 +1,7 @@
 package com.example.softwarepatternsca4;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -147,5 +148,10 @@ public class UsersDetails extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(UsersDetails.this,Home.class));
     }
 }

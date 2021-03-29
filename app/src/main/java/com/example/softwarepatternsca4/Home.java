@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,7 +12,9 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
@@ -26,6 +29,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Objects;
 import Adapters.CatalogueAdapter;
 import Authentication.LogIn;
@@ -40,6 +45,9 @@ public class Home extends AppCompatActivity {
     private CatalogueAdapter catalogueAdapter;
     private NavigationView navigationView;
     private Toolbar toolbar;
+    private ImageView up,down;
+    private final ArrayList<Item> filteredList = new ArrayList<>();
+    private EditText search;
 
     @SuppressLint({"WrongConstant", "NonConstantResourceId"})
     @Override
@@ -54,7 +62,9 @@ public class Home extends AppCompatActivity {
         ImageView cartImage = findViewById(R.id.cart);
         cartImage.setOnClickListener(v -> startActivity(new Intent(Home.this, Checkout.class)));
         navigationView = findViewById(R.id.nav_view);
-        EditText search = findViewById(R.id.filterHome);
+        search = findViewById(R.id.filterHome);
+        up = findViewById(R.id.ascending);
+        down = findViewById(R.id.descending);
         getUserDetailsToPopulateHeader();
         navigationView.setItemIconTintList(null);
         checkUserRights();
@@ -78,13 +88,58 @@ public class Home extends AppCompatActivity {
     }
 
     private void filter(String text) {
-        ArrayList<Item> filteredList = new ArrayList<>();
+        filteredList.clear();
         for (Item item : items) {
             if (item.getTitle().toLowerCase().contains(text.toLowerCase()) || item.getCategory().toLowerCase().contains(text.toLowerCase()) || item.getManufacturer().toLowerCase().contains(text.toLowerCase())) {
                 filteredList.add(item);
             }
         }
         catalogueAdapter.filteredList(filteredList);
+        if(!filteredList.isEmpty()) {
+            up.setVisibility(View.VISIBLE);
+            down.setVisibility(View.VISIBLE);
+        }
+        if(filteredList.isEmpty() || TextUtils.isEmpty(search.getText().toString())) {
+            up.setVisibility(View.INVISIBLE);
+            down.setVisibility(View.INVISIBLE);
+        }
+
+        up.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Collections.sort(filteredList, new Comparator<Item>() {
+                    @Override
+                    public int compare(Item o1, Item o2) {
+                        //Log.i("test","" + (int) (o1.getPrice() - o2.getPrice()));
+                        Log.i("test1","" + o1.getPrice());
+                        Log.i("test2","" + o1.getTitle());
+                        Log.i("test3","" + o2.toString());
+                        Log.i("test4","" + (int) (o1.getPrice() - o2.getPrice()));
+
+                        for(int i = 0; i < filteredList.size(); i++) {
+                            if(!filteredList.get(i).getTitle().equalsIgnoreCase(o1.getTitle())) {
+                                filteredList.remove(i);
+                            }
+                        }
+                        Log.i("fl","" + filteredList.toString());
+                        return (int) (o1.getPrice() - o2.getPrice());
+                    }
+                });
+            }
+        });
+//        down.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Collections.sort(filteredList, new Comparator<Item>() {
+//                    @Override
+//                    public int compare(Item c1, Item c2) {
+//                        Log.i("1","" + c1.toString());
+//                        Log.i("2","" + c2.toString());
+//                        return Double.compare(c1.getPrice(), c2.getPrice());
+//                    }
+//                });
+//            }
+//        });
     }
 
     public void getUserDetailsToPopulateHeader() {
@@ -118,10 +173,14 @@ public class Home extends AppCompatActivity {
                     Item item = itemSnapshot.getValue(Item.class);
                     items.add(item);
                 }
-                recyclerView.setHasFixedSize(true);
-                recyclerView.setLayoutManager(new LinearLayoutManager(Home.this));
-                catalogueAdapter = new CatalogueAdapter(items, Home.this);
-                recyclerView.setAdapter(catalogueAdapter);
+                if (items.isEmpty()) {
+                    Toast.makeText(Home.this,"No items available!",Toast.LENGTH_SHORT).show();
+                } else {
+                    recyclerView.setHasFixedSize(true);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(Home.this));
+                    catalogueAdapter = new CatalogueAdapter(items, Home.this);
+                    recyclerView.setAdapter(catalogueAdapter);
+                }
             }
 
             @Override
@@ -194,6 +253,10 @@ public class Home extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(this,Home.class));
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            startActivity(new Intent(this,Home.class));
+        }
     }
 }

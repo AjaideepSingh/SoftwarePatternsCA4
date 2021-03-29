@@ -1,5 +1,6 @@
 package com.example.softwarepatternsca4;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -35,14 +36,18 @@ public class Orders extends AppCompatActivity {
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for(DataSnapshot orderSnapshot : snapshot.getChildren()) {
+                for (DataSnapshot orderSnapshot : snapshot.getChildren()) {
                     Order order = orderSnapshot.getValue(Order.class);
                     orders.add(order);
                 }
-                recyclerView.setHasFixedSize(true);
-                recyclerView.setLayoutManager(new LinearLayoutManager(Orders.this));
-                orderAdapter = new OrderAdapter(orders,Orders.this);
-                recyclerView.setAdapter(orderAdapter);
+                if (orders.isEmpty()) {
+                    Toast.makeText(Orders.this,"No orders have been places yet!",Toast.LENGTH_SHORT).show();
+                } else {
+                    recyclerView.setHasFixedSize(true);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(Orders.this));
+                    orderAdapter = new OrderAdapter(orders, Orders.this);
+                    recyclerView.setAdapter(orderAdapter);
+                }
             }
 
             @Override
@@ -50,5 +55,10 @@ public class Orders extends AppCompatActivity {
                 Toast.makeText(Orders.this,"Error occurred: " + error.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(Orders.this,Home.class));
     }
 }
