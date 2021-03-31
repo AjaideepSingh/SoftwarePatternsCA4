@@ -21,8 +21,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Objects;
 import Adapters.CheckoutAdapter;
 import Model.Cart;
@@ -39,6 +41,9 @@ public class Checkout extends AppCompatActivity {
     private ConstraintLayout constraintLayout;
     private TextView total;
     private final ArrayList<Order> orders = new ArrayList<>();
+    @SuppressLint("SimpleDateFormat")
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    private final Date date = new Date();
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -55,25 +60,45 @@ public class Checkout extends AppCompatActivity {
             if (cartArrayList.isEmpty()) {
                 emptyCart();
             } else {
-                DatabaseReference removeReference = FirebaseDatabase.getInstance().getReference("Cart");
-                for (int i = 0; i < cartArrayList.size(); i++) {
-                    if (cartArrayList.get(i).getUserID().equals(mAuth.getUid())) {
-                        Order order = new Order(cartArrayList.get(i).getItem(), mAuth.getUid());
-                        orders.add(order);
-                        removeReference.child(cartArrayList.get(i).getId()).removeValue();
-                        cartArrayList.clear();
-                        checkoutAdapter.notifyDataSetChanged();
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("User").child(Objects.requireNonNull(mAuth.getUid()));
+                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        User user = snapshot.getValue(User.class);
+                        checkout(user.getStudent());
                     }
-                }
-                for (int i = 0; i < orders.size(); i++) {
-                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Order");
-                    databaseReference.push().setValue(orders.get(i));
-                }
-                total.setText("0 Euros");
-                orderProcessed();
-                startActivity(new Intent(Checkout.this, Home.class));
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(Checkout.this,"Error occurred: " + error.getMessage(),Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
+    }
+
+    public void checkout(String student) {
+        DatabaseReference removeReference = FirebaseDatabase.getInstance().getReference("Cart");
+        for (int i = 0; i < cartArrayList.size(); i++) {
+            if (cartArrayList.get(i).getUserID().equals(mAuth.getUid())) {
+                if(student.equalsIgnoreCase("Student Account")) {
+                    Context context = new Context(new OperationDiscount());
+                    cartArrayList.get(i).getItem().setPrice(context.executeStrategy(10, cartArrayList.get(i).getItem().getPrice()));
+                }
+                Order order = new Order(cartArrayList.get(i).getItem(), mAuth.getUid(),dateFormat.format(date));
+                orders.add(order);
+                removeReference.child(cartArrayList.get(i).getId()).removeValue();
+                cartArrayList.clear();
+                checkoutAdapter.notifyDataSetChanged();
+            }
+        }
+        for (int i = 0; i < orders.size(); i++) {
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Order");
+            databaseReference.push().setValue(orders.get(i));
+        }
+        total.setText("0 Euros");
+        Toast.makeText(Checkout.this,"Order processed!",Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(Checkout.this, Home.class));
     }
 
     public void showAllItemsInCart() {
@@ -165,7 +190,9 @@ public class Checkout extends AppCompatActivity {
                             updateReference.child(item.getId()).child("stockAmount").setValue(item.getStockAmount() + cart.getItem().getStockAmount()).addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
                                     Toast.makeText(Checkout.this, "Item removed from basket", Toast.LENGTH_SHORT).show();
-                                    total.setText("0");
+                                    if(cartArrayList.size() == 0) {
+                                        total.setText("0");
+                                    }
                                 } else {
                                     Toast.makeText(Checkout.this, "Error occurred: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                                 }
@@ -183,23 +210,18 @@ public class Checkout extends AppCompatActivity {
         }
     };
 
-    public void orderProcessed() {
-        Snackbar snackbar = Snackbar.make(constraintLayout, "Order processed", Snackbar.LENGTH_LONG);
-        snackbar.show();
-    }
-
     public void noStudentDiscount() {
-        Snackbar snackbar = Snackbar.make(constraintLayout, "Sorry no discount available", Snackbar.LENGTH_LONG);
+        Snackbar snackbar = Snackbar.make(constraintLayout, "Sorry no discount available", Snackbar.LENGTH_SHORT);
         snackbar.show();
     }
 
     public void studentDiscount() {
-        Snackbar snackbar = Snackbar.make(constraintLayout, "10% student discount applied", Snackbar.LENGTH_LONG);
+        Snackbar snackbar = Snackbar.make(constraintLayout, "10% student discount applied", Snackbar.LENGTH_SHORT);
         snackbar.show();
     }
 
     public void emptyCart() {
-        Snackbar snackbar = Snackbar.make(constraintLayout, "Your cart is empty!", Snackbar.LENGTH_LONG);
+        Snackbar snackbar = Snackbar.make(constraintLayout, "Your cart is empty!", Snackbar.LENGTH_SHORT);
         snackbar.show();
     }
 

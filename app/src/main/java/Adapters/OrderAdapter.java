@@ -2,12 +2,9 @@ package Adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -18,8 +15,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import Model.Order;
 import Model.User;
@@ -58,7 +53,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
                 Toast.makeText(context, "Error occurred: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-        holder.setImageView(orders.get(position).getItem().getImage());
+        holder.setTimeOfPurchase(orders.get(position).getDateTime());
     }
 
     @Override
@@ -71,15 +66,14 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private final TextView title, userName, stock;
-        private final ImageView imageView;
+        private final TextView title, userName, stock,timeOfPurchase;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.orderRowImage);
             title = itemView.findViewById(R.id.orderRowTitle);
             userName = itemView.findViewById(R.id.orderRowName);
             stock = itemView.findViewById(R.id.orderRowQuantity);
+            timeOfPurchase = itemView.findViewById(R.id.top);
         }
 
         @SuppressLint("SetTextI18n")
@@ -94,15 +88,11 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
 
         @SuppressLint("SetTextI18n")
         public void setStock(String r) {
-            stock.setText(r + " Quantity");
+            stock.setText(r + " Qty purchased");
         }
 
-        public void setImageView(String ra) {
-            StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-            storageReference.child(ra).getBytes(Long.MAX_VALUE).addOnSuccessListener(bytes -> {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                imageView.setImageBitmap(bitmap);
-            });
+        public void setTimeOfPurchase(String top) {
+            timeOfPurchase.setText(top);
         }
     }
 }

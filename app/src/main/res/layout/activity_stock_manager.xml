@@ -33,17 +33,8 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/stockManagerRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="624dp"
+                android:layout_height="match_parent"
                 tools:ignore="MissingConstraints" />
-
-            <EditText
-                android:id="@+id/managerSearch"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:ems="10"
-                android:hint="Search by fields!"
-                android:inputType="textPersonName" />
         </FrameLayout>
     </LinearLayout>
 

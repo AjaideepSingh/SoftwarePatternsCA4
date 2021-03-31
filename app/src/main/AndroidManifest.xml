@@ -24,12 +24,12 @@
         </activity>
         <activity
             android:name=".Home"
-            android:theme="@style/Theme.test" />
+            android:theme="@style/Theme.test" android:windowSoftInputMode="adjustPan"/>
         <activity android:name="Authentication.SignUp" />
         <activity android:name=".StockManager" android:theme="@style/Theme.test" />
         <activity android:name=".Settings" />
         <activity android:name=".Checkout" />
-        <activity android:name=".Reviews" android:windowSoftInputMode="adjustNothing" />
+        <activity android:name=".Reviews" />
         <activity android:name=".Orders" />
         <activity android:name="UsersDetails" />
     </application>

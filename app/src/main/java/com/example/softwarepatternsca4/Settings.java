@@ -30,10 +30,8 @@ import Model.User;
 
 public class Settings extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private EditText name,cardNumber,CVV,expiryDate,address;
-    private TextView email,accountType;
-    private Spinner studentSpinner;
+    private TextView email,accountType,student;
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private final ArrayList<String> accountTypes = new ArrayList<>();
 
 
     @Override
@@ -49,7 +47,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         address = findViewById(R.id.addressSettings);
         email = findViewById(R.id.settingsEmail);
         accountType = findViewById(R.id.settingsAccountType);
-        studentSpinner = findViewById(R.id.studentSettingsSpinner);
+        student = findViewById(R.id.studentTV);
         expiryDate.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -72,7 +70,6 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
 
             }
         });
-        populateSpinner();
         fillFields();
         update.setOnClickListener(v -> {
             DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("User");
@@ -100,15 +97,6 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         });
     }
 
-    public void populateSpinner() {
-        accountTypes.add("Student Account");
-        accountTypes.add("Non Student Account");
-        ArrayAdapter<String> adapterAccountType = new ArrayAdapter<>(Settings.this,android.R.layout.simple_spinner_dropdown_item,accountTypes);
-        adapterAccountType.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        studentSpinner.setAdapter(adapterAccountType);
-        studentSpinner.setOnItemSelectedListener(Settings.this);
-    }
-
     public void fillFields() {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("User").child(Objects.requireNonNull(mAuth.getUid()));
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -123,12 +111,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
                 address.setText(user.getShippingAddress());
                 email.setText(user.getEmailAddress());
                 accountType.setText(user.getAccType());
-                for (int i = 0; i < accountTypes.size(); i++) {
-                    if (accountTypes.get(i).equalsIgnoreCase(user.getAccType())) {
-                        studentSpinner.setSelection(i);
-                        break;
-                    }
-                }
+                student.setText(user.getStudent());
             }
 
             @Override
@@ -142,7 +125,6 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         NamesRepository namesRepository = new NamesRepository();
         ArrayList<String> namesInDB = new ArrayList<>();
         for (Iterator iterator = namesRepository.getIterator(names); iterator.hasNext(); ) {
-            //namesInDB.add((String) iterator.next());
             namesInDB.add(String.valueOf(iterator.next()).toLowerCase());
         }
         if(TextUtils.isEmpty(name.getText().toString().trim().toLowerCase())) {
@@ -170,8 +152,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
             updateRef.child("cardNumber").setValue(cardNumber.getText().toString().trim());
             updateRef.child("expiryDate").setValue(expiryDate.getText().toString().trim());
             updateRef.child("cvv").setValue(CVV.getText().toString().trim());
-            updateRef.child("student").setValue(studentSpinner.getSelectedItem().toString());
-            updateRef.addValueEventListener(new ValueEventListener() {
+            updateRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     User user = snapshot.getValue(User.class);
@@ -181,12 +162,6 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
                     cardNumber.setText(user.getCardNumber());
                     expiryDate.setText(user.getExpiryDate());
                     CVV.setText(user.getCvv());
-                    for(int i = 0; i < accountTypes.size(); i++){
-                        if(accountTypes.get(i).equalsIgnoreCase(user.getAccType())) {
-                            studentSpinner.setSelection(i);
-                            break;
-                        }
-                    }
                 }
 
                 @Override

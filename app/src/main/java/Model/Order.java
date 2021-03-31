@@ -2,7 +2,7 @@ package Model;
 
 public class Order {
     private Item item;
-    private String userID;
+    private String userID,dateTime;
 
     public Item getItem() {
         return item;
@@ -20,9 +20,18 @@ public class Order {
         this.userID = userID;
     }
 
-    public Order(Item item, String userID) {
+    public String getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(String dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    public Order(Item item, String userID,String dateTime) {
         this.item = item;
         this.userID = userID;
+        this.dateTime = dateTime;
     }
 
     public Order() {

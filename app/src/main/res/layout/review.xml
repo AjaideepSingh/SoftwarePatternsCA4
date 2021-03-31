@@ -36,11 +36,11 @@
 
         <TextView
             android:id="@+id/reviewRowTitle"
-            android:layout_width="200dp"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="5dp"
-            android:layout_marginEnd="176dp"
+            android:layout_marginEnd="76dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

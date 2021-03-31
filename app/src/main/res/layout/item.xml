@@ -27,21 +27,18 @@
 
         <TextView
             android:id="@+id/itemTitle"
-            android:layout_width="200dp"
+            android:layout_width="240dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="11dp"
-            android:layout_marginEnd="58dp"
+            android:layout_marginEnd="29dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             app:layout_constraintEnd_toStartOf="@+id/itemOptions"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/itemPicture"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/itemPrice"
-            android:layout_width="200dp"
+            android:layout_width="240dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="11dp"
             android:layout_marginEnd="79dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             app:layout_constraintEnd_toEndOf="parent"
@@ -51,9 +48,8 @@
 
         <TextView
             android:id="@+id/itemManufacturer"
-            android:layout_width="200dp"
+            android:layout_width="240dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="11dp"
             android:layout_marginEnd="129dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             app:layout_constraintEnd_toEndOf="parent"
@@ -63,9 +59,8 @@
 
         <TextView
             android:id="@+id/itemCategory"
-            android:layout_width="200dp"
+            android:layout_width="240dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="11dp"
             android:layout_marginEnd="108dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             app:layout_constraintEnd_toStartOf="@+id/itemOptions"
@@ -87,9 +82,8 @@
 
         <TextView
             android:id="@+id/rcvRowStock"
-            android:layout_width="200dp"
+            android:layout_width="240dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="11dp"
             android:layout_marginEnd="159dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             app:layout_constraintEnd_toEndOf="parent"

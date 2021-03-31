@@ -168,7 +168,6 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
         NamesRepository namesRepository = new NamesRepository();
         ArrayList<String> namesInDB = new ArrayList<>();
         for (Iterator iterator = namesRepository.getIterator(names); iterator.hasNext(); ) {
-//            namesInDB.add((String) iterator.next());
             namesInDB.add(String.valueOf(iterator.next()).toLowerCase());
         }
         if (TextUtils.isEmpty(userName.getText().toString().trim().toLowerCase())) {

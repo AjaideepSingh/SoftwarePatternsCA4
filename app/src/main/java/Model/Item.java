@@ -1,9 +1,10 @@
 package Model;
 
 public class Item {
-    private String title,manufacturer,category,image,id;
+    private String title,manufacturer,category,id;
     private double price;
     private int stockAmount;
+    private String image;
 
     public Item() {
 
@@ -65,25 +66,12 @@ public class Item {
         this.id = id;
     }
 
-    public Item(String title, String manufacturer, String category, String image, double price, int stockAmount) {
+    public Item(String title, String manufacturer, String category, double price,String image, int stockAmount) {
         this.title = title;
         this.manufacturer = manufacturer;
         this.category = category;
         this.image = image;
         this.price = price;
         this.stockAmount = stockAmount;
-    }
-
-    @Override
-    public String toString() {
-        return "Item{" +
-                "title='" + title + '\'' +
-                ", manufacturer='" + manufacturer + '\'' +
-                ", category='" + category + '\'' +
-                ", image='" + image + '\'' +
-                ", id='" + id + '\'' +
-                ", price=" + price +
-                ", stockAmount=" + stockAmount +
-                '}';
     }
 }

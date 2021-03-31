@@ -15,9 +15,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,8 +59,6 @@ public class StockManager extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setTitle("Stock manager");
         ImageView createStock = findViewById(R.id.post);
         recyclerView = findViewById(R.id.stockManagerRecyclerView);
-        EditText search = findViewById(R.id.managerSearch);
-        showAllStock();
         createStock.setOnClickListener(v -> {
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Item");
             databaseReference.addValueEventListener(new ValueEventListener() {
@@ -83,32 +79,7 @@ public class StockManager extends AppCompatActivity {
                 }
             });
         });
-        search.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                filter(s.toString());
-            }
-        });
-    }
-
-    public void filter(String text) {
-        ArrayList<Item> filteredList = new ArrayList<>();
-        for (Item item : items) {
-            if (item.getTitle().toLowerCase().contains(text.toLowerCase()) || item.getCategory().toLowerCase().contains(text.toLowerCase()) || item.getManufacturer().toLowerCase().contains(text.toLowerCase())) {
-                filteredList.add(item);
-            }
-        }
-        managerCatalogueAdapter.filteredList(filteredList);
+        showAllStock();
     }
 
     public void createStock(ArrayList<String> itemTitles) {
@@ -187,12 +158,12 @@ public class StockManager extends AppCompatActivity {
                 title.setError("Error this item already exists");
                 title.requestFocus();
             } else {
-                Item item = new Item(title.getText().toString(), manufacturer.getText().toString(), category.getSelectedItem().toString(), imageDownloadUrl, Double.parseDouble(price.getText().toString()), Integer.parseInt(stock.getText().toString()));
+                Item item = new Item(title.getText().toString(), manufacturer.getText().toString(), category.getSelectedItem().toString(), Double.parseDouble(price.getText().toString()), imageDownloadUrl,Integer.parseInt(stock.getText().toString()));
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                 databaseReference.child("Item").push().setValue(item).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Toast.makeText(StockManager.this, "Item added to catalgoue", Toast.LENGTH_SHORT).show();
-                        dialog.cancel();
+                        dialog.dismiss();
                         items.clear();
                         showAllStock();
                     } else {

@@ -6,6 +6,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -113,7 +115,8 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
 
                             }
                         });
-                        builder.setPositiveButton("add", (rDialog, which) -> { });
+                        builder.setPositiveButton("add", (rDialog, which) -> {
+                        });
                         builder.setNegativeButton("Close", (rDialog, which) -> rDialog.cancel());
                         builder.setView(reviewView);
                         AlertDialog rDialog = builder.create();
@@ -134,7 +137,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                                 Review reviewObj = new Review(review.getText().toString().trim(), mAuth.getUid(), items.get(position).getTitle(), ratingMeasure);
                                 DatabaseReference reviewReference = FirebaseDatabase.getInstance().getReference("Review");
                                 reviewReference.push().setValue(reviewObj).addOnCompleteListener(task1 -> {
-                                    if(task1.isSuccessful()) {
+                                    if (task1.isSuccessful()) {
                                         Toast.makeText(context, "Review created", Toast.LENGTH_SHORT).show();
                                     } else {
                                         Toast.makeText(context, "Error occurred: " + Objects.requireNonNull(task1.getException()).getMessage(), Toast.LENGTH_SHORT).show();
@@ -148,7 +151,8 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                         View view = inflater.inflate(R.layout.addtocartpopup, null);
                         quantity = view.findViewById(R.id.quantity);
-                        builder.setPositiveButton("add", (dialog, which) -> { });
+                        builder.setPositiveButton("add", (dialog, which) -> {
+                        });
                         builder.setNegativeButton("Close", (dialog, which) -> dialog.cancel());
                         builder.setView(view);
                         AlertDialog dialog = builder.create();
@@ -165,6 +169,9 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                                             if (TextUtils.isEmpty(quantity.getText().toString())) {
                                                 quantity.setError("Field cannot be empty!");
                                                 quantity.requestFocus();
+                                            } else if(quantity.getText().toString().equals("0")) {
+                                                quantity.setError("Select valid number");
+                                                quantity.requestFocus();
                                             } else if (Double.parseDouble(quantity.getText().toString()) > item.getStockAmount()) {
                                                 quantity.setError("Only " + item.getStockAmount() + " left!");
                                                 quantity.requestFocus();
@@ -180,26 +187,29 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                                                 databaseReference.push().setValue(cart).addOnCompleteListener(task1 -> {
                                                     if (task1.isSuccessful()) {
                                                         Toast.makeText(context, "Item added to cart", Toast.LENGTH_SHORT).show();
-                                                        DatabaseReference updateItemDBReference = FirebaseDatabase.getInstance().getReference("Item");
-                                                        updateItemDBReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                            @Override
-                                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                                for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
-                                                                    Item item = itemSnapshot.getValue(Item.class);
-                                                                    assert item != null;
-                                                                    item.setId(itemSnapshot.getKey());
-                                                                    if (item.getTitle().equalsIgnoreCase(items.get(position).getTitle())) {
-                                                                        updateItemDBReference.child(item.getId()).child("stockAmount").setValue(item.getStockAmount() - Integer.parseInt(quantity.getText().toString()));
-                                                                        items.clear();
-                                                                        notifyDataSetChanged();
-                                                                        break;
+                                                        new Handler(Looper.getMainLooper()).post(() -> {
+                                                            DatabaseReference updateItemDBReference = FirebaseDatabase.getInstance().getReference("Item");
+                                                            updateItemDBReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                @Override
+                                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                                    for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
+                                                                        Item item = itemSnapshot.getValue(Item.class);
+                                                                        assert item != null;
+                                                                        item.setId(itemSnapshot.getKey());
+                                                                        if (item.getTitle().equalsIgnoreCase(items.get(position).getTitle())) {
+                                                                            updateItemDBReference.child(item.getId()).child("stockAmount").setValue(item.getStockAmount() - Integer.parseInt(quantity.getText().toString()));
+                                                                            items.clear();
+                                                                            notifyDataSetChanged();
+                                                                            break;
+                                                                        }
                                                                     }
                                                                 }
-                                                            }
-                                                            @Override
-                                                            public void onCancelled(@NonNull DatabaseError error) {
-                                                                Toast.makeText(context, "Error occurred: " + Objects.requireNonNull(error.getMessage()), Toast.LENGTH_SHORT).show();
-                                                            }
+
+                                                                @Override
+                                                                public void onCancelled(@NonNull DatabaseError error) {
+                                                                    Toast.makeText(context, "Error occurred: " + Objects.requireNonNull(error.getMessage()), Toast.LENGTH_SHORT).show();
+                                                                }
+                                                            });
                                                         });
                                                     } else {
                                                         Toast.makeText(context, "Error occurred: " + Objects.requireNonNull(task1.getException()).getMessage(), Toast.LENGTH_SHORT).show();
@@ -209,6 +219,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                                         }
                                     }
                                 }
+
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError error) {
                                     Toast.makeText(context, "Error occurred: " + Objects.requireNonNull(error.getMessage()), Toast.LENGTH_SHORT).show();

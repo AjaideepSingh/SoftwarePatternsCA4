@@ -104,7 +104,9 @@ public class Home extends AppCompatActivity {
                 filteredList.add(item);
             }
         }
-        catalogueAdapter.filteredList(filteredList);
+        if(!filteredList.isEmpty()) {
+            catalogueAdapter.filteredList(filteredList);
+        }
         if(!filteredList.isEmpty()) {
             filter.setVisibility(View.VISIBLE);
         }
@@ -115,9 +117,6 @@ public class Home extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
-                if(items.isEmpty()) {
-                    Toast.makeText(Home.this,"Cannot filter as no items available!",Toast.LENGTH_SHORT).show();
-                } else {
                     ArrayList<String> filters = new ArrayList<>();
                     ArrayList<String> objectVariables = new ArrayList<>();
                     android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(Home.this);
@@ -133,6 +132,7 @@ public class Home extends AppCompatActivity {
                     objectVariables.add("Title");
                     objectVariables.add("Price");
                     objectVariables.add("Manufacturer");
+                    objectVariables.add("Stock count");
                     ArrayAdapter filterAdapter = new ArrayAdapter(Home.this, android.R.layout.simple_spinner_dropdown_item, filters) {
                         @Override
                         public boolean isEnabled(int position) {
@@ -230,6 +230,11 @@ public class Home extends AppCompatActivity {
                                 Log.i("fl","" + filteredList.toString());
                                 catalogueAdapter.filteredList(filteredList);
                             }
+                            if(filterType.equals("Descending") && objectVariable.equals("Stock count")) {
+                                filteredList.sort((o1, o2) -> Integer.compare(o2.getStockAmount(), o1.getStockAmount()));
+                                catalogueAdapter.filteredList(filteredList);
+                            }
+
                             if(filterType.equals("Ascending") && objectVariable.equals("Title")) {
                                 Collections.sort(filteredList, Comparator.comparing(Item::getTitle));
                                 catalogueAdapter.filteredList(filteredList);
@@ -248,10 +253,14 @@ public class Home extends AppCompatActivity {
                                 Log.i("fla","" + filteredList.toString());
                                 catalogueAdapter.filteredList(filteredList);
                             }
+                            if(filterType.equals("Ascending") && objectVariable.equals("Stock count")) {
+                                filteredList.sort((o1, o2) -> Integer.compare(o2.getStockAmount(), o1.getStockAmount()));
+                                Collections.reverse(filteredList);
+                                catalogueAdapter.filteredList(filteredList);
+                            }
                         }
                     });
                 }
-            }
         });
     }
 
