@@ -38,7 +38,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull OrderAdapter.ViewHolder holder, final int position) {
         holder.setTitle(orders.get(position).getItem().getTitle());
-        holder.setStock(orders.get(position).getItem().getStockAmount() + " Qty purchased" + " for " + orders.get(position).getItem().getPrice() + " Euros");
+        holder.setStock(String.valueOf(orders.get(position).getItem().getStockAmount()));
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("User").child(orders.get(position).getUserID());
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -88,7 +88,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
 
         @SuppressLint("SetTextI18n")
         public void setStock(String r) {
-            stock.setText(r);
+            stock.setText(r + " Qty purchased");
         }
 
         public void setTimeOfPurchase(String top) {
