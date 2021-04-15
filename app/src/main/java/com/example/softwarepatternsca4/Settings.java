@@ -81,7 +81,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
                     for (DataSnapshot userSnapshot : snapshot.getChildren()) {
                         User user = userSnapshot.getValue(User.class);
                         assert user != null;
-                        names.add(user.getName());
+                        names.add(user.getName().toLowerCase());
                         if(Objects.equals(mAuth.getUid(), userSnapshot.getKey())) {
                             currentUserId = userSnapshot.getKey();
                         }
@@ -130,7 +130,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemSel
         if(TextUtils.isEmpty(name.getText().toString().trim().toLowerCase())) {
             name.setError("Error Field cannot be empty!");
             name.requestFocus();
-        } else if (namesInDB.contains(name.getText().toString()) && !Objects.requireNonNull(mAuth.getUid()).equalsIgnoreCase(userID)) {
+        } else if (namesInDB.contains(name.getText().toString().toLowerCase()) && !Objects.requireNonNull(mAuth.getUid()).equalsIgnoreCase(userID)) {
             name.setError("User name already exists");
             name.requestFocus();
         } else if(TextUtils.isEmpty(address.getText().toString())) {

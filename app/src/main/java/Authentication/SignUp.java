@@ -17,8 +17,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.softwarepatternsca4.Home;
 import com.example.softwarepatternsca4.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,8 +30,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Objects;
+
 import Model.User;
 
 public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -74,9 +78,9 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String strS = s.toString();
-                if (start == 1 && start+count == 2 && !strS.contains("/")) {
+                if (start == 1 && start + count == 2 && !strS.contains("/")) {
                     expiryDate.setText(s.toString() + "/");
-                } else if (start == 3 && start-before == 2 && strS.contains("/")) {
+                } else if (start == 3 && start - before == 2 && strS.contains("/")) {
                     expiryDate.setText(s.toString().replace("/", ""));
                 }
             }
@@ -98,7 +102,7 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
                     for (DataSnapshot userSnapshot : snapshot.getChildren()) {
                         User user = userSnapshot.getValue(User.class);
                         assert user != null;
-                        names.add(user.getName());
+                        names.add(user.getName().toLowerCase());
                     }
                     createUser(names);
                 }
@@ -170,10 +174,10 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
         for (Iterator iterator = namesRepository.getIterator(names); iterator.hasNext(); ) {
             namesInDB.add(String.valueOf(iterator.next()).toLowerCase());
         }
-        if (TextUtils.isEmpty(userName.getText().toString().trim().toLowerCase())) {
+        if (TextUtils.isEmpty(userName.getText().toString().trim())) {
             userName.setError("Name is required!");
             userName.requestFocus();
-        } else if (namesInDB.contains(userName.getText().toString())) {
+        } else if (namesInDB.contains(userName.getText().toString().toLowerCase())) {
             userName.setError("User name already exists");
             userName.requestFocus();
         } else if (TextUtils.isEmpty(emailAddress.getText().toString().trim())) {
@@ -194,13 +198,13 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
         } else if (TextUtils.isEmpty(expiryDate.getText().toString())) {
             expiryDate.setError("Expiry dare is required!");
             expiryDate.requestFocus();
-        } else if(accountType.getSelectedItemPosition() == 0 || discount.getSelectedItemPosition() == 0) {
-                AlertDialog.Builder dlgAlert = new AlertDialog.Builder(SignUp.this);
-                dlgAlert.setMessage("Spinner values must be selected!");
-                dlgAlert.setTitle("Error...");
-                dlgAlert.setPositiveButton("OK", null);
-                dlgAlert.setCancelable(true);
-                dlgAlert.create().show();
+        } else if (accountType.getSelectedItemPosition() == 0 || discount.getSelectedItemPosition() == 0) {
+            AlertDialog.Builder dlgAlert = new AlertDialog.Builder(SignUp.this);
+            dlgAlert.setMessage("Spinner values must be selected!");
+            dlgAlert.setTitle("Error...");
+            dlgAlert.setPositiveButton("OK", null);
+            dlgAlert.setCancelable(true);
+            dlgAlert.create().show();
         } else {
             mAuth.createUserWithEmailAndPassword(emailAddress.getText().toString().trim(), password.getText().toString()).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
@@ -214,19 +218,16 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
                             .setAccType(accountType.getSelectedItem().toString())
                             .setStudent(discount.getSelectedItem().toString()).create();
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-                    databaseReference.child("User").child(Objects.requireNonNull(mAuth.getUid())).setValue(user).addOnCompleteListener(task1 -> {
-                        if (task1.isSuccessful()) {
-                            Toast.makeText(getApplicationContext(), "Account created!", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(getApplicationContext(), Home.class));
-                            userName.setText("");
-                            emailAddress.setText("");
-                            password.setText("");
-                            address.setText("");
-                            cardNo.setText("");
-                            cvv.setText("");
-                            expiryDate.setText("");
-                        }
-                    });
+                    databaseReference.child("User").child(Objects.requireNonNull(mAuth.getUid())).setValue(user);
+                    Toast.makeText(getApplicationContext(), "Account created!", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(getApplicationContext(), Home.class));
+                    userName.setText("");
+                    emailAddress.setText("");
+                    password.setText("");
+                    address.setText("");
+                    cardNo.setText("");
+                    cvv.setText("");
+                    expiryDate.setText("");
                 } else {
                     Toast.makeText(getApplicationContext(), "Error Occurred!" + Objects.requireNonNull(task.getException()).toString(), Toast.LENGTH_SHORT).show();
                 }
@@ -243,6 +244,12 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(this, SignUp.class));
+    }
 }
+
 
 

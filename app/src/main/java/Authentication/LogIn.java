@@ -7,10 +7,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.softwarepatternsca4.Home;
 import com.example.softwarepatternsca4.R;
 import com.google.firebase.auth.FirebaseAuth;
+
 import java.util.Objects;
 
 public class LogIn extends AppCompatActivity {
@@ -26,34 +28,35 @@ public class LogIn extends AppCompatActivity {
         emailAddress = findViewById(R.id.userNameLogIn);
         password = findViewById(R.id.passwordTextField);
         TextView createAcc = findViewById(R.id.createAccount);
-        if(mAuth.getCurrentUser() != null) {
-            startActivity(new Intent(LogIn.this, Home.class));
-            return;
-        }
         createAcc.setOnClickListener(v -> {
             startActivity(new Intent(getApplicationContext(), SignUp.class));
         });
         logIn.setOnClickListener(v -> {
-            if(TextUtils.isEmpty(emailAddress.getText().toString().trim())) {
+            if (TextUtils.isEmpty(emailAddress.getText().toString().trim())) {
                 emailAddress.setError("Email Address is required.");
                 emailAddress.requestFocus();
-            }else if(TextUtils.isEmpty(password.getText().toString())) {
+            } else if (TextUtils.isEmpty(password.getText().toString())) {
                 password.setError("Password is required.");
                 password.requestFocus();
-            }else if(password.getText().toString().length() < 6) {
+            } else if (password.getText().toString().length() < 6) {
                 password.setError("Password length must be >= 6 characters");
                 password.requestFocus();
             } else {
                 mAuth.signInWithEmailAndPassword(emailAddress.getText().toString().trim(), password.getText().toString()).addOnCompleteListener(task -> {
-                    if(task.isSuccessful()) {
+                    if (task.isSuccessful()) {
                         startActivity(new Intent(getApplicationContext(), Home.class));
                         emailAddress.setText("");
                         password.setText("");
-                    }else {
+                    } else {
                         Toast.makeText(LogIn.this, "Error occurred! " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(this, LogIn.class));
     }
 }
